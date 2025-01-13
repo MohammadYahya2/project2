@@ -1,0 +1,28 @@
+<!-- courses/templates/courses/courses.html -->
+
+{% extends 'courses/base.html' %}
+
+{% block title %}الكورسات - eLEARNING{% endblock %}
+
+{% block content %}
+    <div class="container mt-5">
+        <h2>الكورسات</h2>
+        <div class="row">
+            {% for course in courses %}
+                <div class="col-md-4">
+                    <div class="card mb-4">
+                        <img src="{{ course.image.url }}" class="card-img-top" alt="{{ course.title }}">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ course.title }}</h5>
+                            <p class="card-text">{{ course.description|truncatewords:20 }}</p>
+                            <p class="card-text"><strong>السعر:</strong> {{ course.price }} ريال</p>
+                            <a href="{% url 'course_detail' course.pk %}" class="btn btn-primary">تفاصيل الكورس</a>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <p>لا توجد كورسات متاحة في الوقت الحالي.</p>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

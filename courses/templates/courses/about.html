@@ -1,0 +1,27 @@
+<!-- courses/templates/courses/about.html -->
+
+{% extends 'courses/base.html' %}
+
+{% block title %}عن الموقع - eLEARNING{% endblock %}
+
+{% block content %}
+    <div class="container mt-5">
+        <h2>عن الموقع</h2>
+        {% if about_info %}
+            <img src="{{ about_info.image.url }}" alt="About Image" class="img-fluid mb-4">
+            <p>{{ about_info.description }}</p>
+            <p>{{ about_info.more_description }}</p>
+            <h4>ميزاتنا:</h4>
+            <ul>
+                {% for feature in about_info.features %}
+                    <li>{{ feature }}</li>
+                {% endfor %}
+            </ul>
+            {% if about_info.read_more_url %}
+                <a href="{{ about_info.read_more_url }}" class="btn btn-primary">اقرأ المزيد</a>
+            {% endif %}
+        {% else %}
+            <p>لا توجد معلومات متاحة حول الموقع حالياً.</p>
+        {% endif %}
+    </div>
+{% endblock %}

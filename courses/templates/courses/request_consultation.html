@@ -1,0 +1,35 @@
+<!-- courses/templates/courses/request_consultation.html -->
+
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <title>طلب استشارة</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-5">
+    <h2>طلب استشارة من المصمم الداخلي</h2>
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        <div class="mb-3">
+            {{ form.subject.label_tag }}
+            {{ form.subject }}
+            {{ form.subject.errors }}
+        </div>
+        <div class="mb-3">
+            {{ form.message.label_tag }}
+            {{ form.message }}
+            {{ form.message.errors }}
+        </div>
+        <div class="mb-3">
+            {{ form.scheduled_at.label_tag }}
+            {{ form.scheduled_at }}
+            {{ form.scheduled_at.errors }}
+        </div>
+        <button type="submit" class="btn btn-primary">إرسال الطلب</button>
+    </form>
+</div>
+</body>
+</html>

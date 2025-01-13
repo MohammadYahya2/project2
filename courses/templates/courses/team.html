@@ -1,0 +1,37 @@
+<!-- courses/templates/courses/team.html -->
+
+{% extends 'courses/base.html' %}
+
+{% block title %}فريق العمل - eLEARNING{% endblock %}
+
+{% block content %}
+    <div class="container mt-5">
+        <h2>فريق العمل</h2>
+        <div class="row">
+            {% for instructor in instructors %}
+                <div class="col-md-4">
+                    <div class="card mb-4">
+                        <img src="{{ instructor.image.url }}" class="card-img-top" alt="{{ instructor.name }}">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ instructor.name }}</h5>
+                            <p class="card-text">{{ instructor.designation }}</p>
+                            <div class="d-flex justify-content-center">
+                                {% if instructor.facebook_url %}
+                                    <a href="{{ instructor.facebook_url }}" class="btn btn-sm btn-primary mx-1"><i class="fab fa-facebook-f"></i></a>
+                                {% endif %}
+                                {% if instructor.twitter_url %}
+                                    <a href="{{ instructor.twitter_url }}" class="btn btn-sm btn-primary mx-1"><i class="fab fa-twitter"></i></a>
+                                {% endif %}
+                                {% if instructor.instagram_url %}
+                                    <a href="{{ instructor.instagram_url }}" class="btn btn-sm btn-primary mx-1"><i class="fab fa-instagram"></i></a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <p>لا توجد معلومات عن فريق العمل حالياً.</p>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
