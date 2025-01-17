@@ -110,7 +110,6 @@ def request_consultation(request):
         form = DesignerConsultationForm()
     return render(request, 'courses/request_consultation.html', {'form': form})
 
-# 8. عرض الكورسات بناءً على الفئة
 def courses_by_category(request, category_id):
     category = get_object_or_404(Category, id=category_id)
     courses = Course.objects.filter(category=category)

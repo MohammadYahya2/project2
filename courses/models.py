@@ -55,27 +55,19 @@ class SubCategory(models.Model):
 
 from django.db import models
 
-# courses/models.py
-
-from django.db import models
-
 class Instructor(models.Model):
     name = models.CharField(max_length=100)
-    image = models.ImageField(upload_to='instructors/', null=True, blank=True)  # جعل الحقل اختياريًا
+    image = models.ImageField(upload_to='instructors/', null=True, blank=True)
     designation = models.CharField(max_length=100, blank=True, null=True)
     facebook_url = models.URLField(blank=True, null=True)
     twitter_url = models.URLField(blank=True, null=True)
     instagram_url = models.URLField(blank=True, null=True)
+    delay = models.FloatField(null=True, blank=True)  # جعل الحقل اختياريًا
 
     def __str__(self):
         return self.name
 
-
-
-
-
 class Course(models.Model):
-    # الحقول الحالية...
     title = models.CharField(max_length=200)
     image = models.ImageField(upload_to='courses/')
     price = models.DecimalField(max_digits=8, decimal_places=2)
@@ -86,8 +78,6 @@ class Course(models.Model):
     students_count = models.IntegerField(default=0)
     delay = models.FloatField(default=0.1)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='courses')
-    
-    # الحقول الجديدة
     created_at = models.DateTimeField(auto_now_add=True)
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
 

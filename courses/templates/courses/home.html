@@ -6,38 +6,21 @@
 {% block title %}Home - eLEARNING{% endblock %}
 
 {% block content %}
-   <!-- Header Start -->
-   <div class="container-fluid p-0 mb-5">
-    <div class="header-section position-relative">
-        <img class="img-fluid w-100" src="{% static 'img/carousel-1.jpg' %}" alt="Header Image">
-        <div class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center" style="background: rgba(0, 0, 0, 0.5);">
-            <div class="container">
-                <div class="row justify-content-center">
-                    <div class="col-sm-8 text-center text-white">
-                        <h1 class="display-4">Welcome to eLEARNING</h1>
-                        <p class="fs-5">Your gateway to online education.</p>
-                        <a href="{% url 'courses' %}" class="btn btn-primary py-md-3 px-md-5 me-3">Explore Courses</a>
-                        <a href="" class="btn btn-light py-md-3 px-md-5">Join Now</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+
     <!-- Carousel Start -->
     <div class="container-fluid p-0 mb-5">
         <div class="owl-carousel header-carousel position-relative">
             {% for carousel in carousels %}
                 <div class="owl-carousel-item position-relative">
                     <img class="img-fluid" src="{{ carousel.image.url }}" alt="">
-                    <div class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center" style="background: rgba(24, 29, 56, .7);">
+                    <div class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center" style="background: rgba(25, 26, 28, 0.7);">
                         <div class="container">
                             <div class="row justify-content-start">
                                 <div class="col-sm-10 col-lg-8">
-                                    <h5 class="text-primary text-uppercase mb-3 animated slideInDown">{{ carousel.subtitle }}</h5>
+                                    <h5 class="text-uppercase mb-3 animated slideInDown"style="color: #000;;">{{ carousel.subtitle }}</h5>
                                     <h1 class="display-3 text-white animated slideInDown">{{ carousel.title }}</h1>
-                                    <p class="fs-5 text-white mb-4 pb-2">{{ carousel.description }}</p>
-                                    <a href="{{ carousel.read_more_url }}" class="btn btn-primary py-md-3 px-md-5 me-3 animated slideInLeft">Read More</a>
+                                    <p class="fs-5 text-light mb-4 pb-2">{{ carousel.description }}</p>
+                                    <a href="{{ carousel.read_more_url }}" class="btn btn-outline-light py-md-3 px-md-5 me-3 animated slideInLeft">Read More</a>
                                     <a href="{{ carousel.join_now_url }}" class="btn btn-light py-md-3 px-md-5 animated slideInRight">Join Now</a>
                                 </div>
                             </div>
@@ -107,17 +90,17 @@
                 </div>
                 <div class="col-lg-6 wow fadeInUp" data-wow-delay="0.3s">
                     <h6 class="section-title bg-white text-start text-primary pe-3">About Us</h6>
-                    <h1 class="mb-4">Welcome to eLEARNING</h1>
+                    <h1 class="mb-4">Welcome to MJ</h1>
                     <p class="mb-4">{{ about.description }}</p>
                     <p class="mb-4">{{ about.more_description }}</p>
                     <div class="row gy-2 gx-4 mb-4">
                         {% for feature in about.features %}
                             <div class="col-sm-6">
-                                <p class="mb-0"><i class="fa fa-arrow-right text-primary me-2"></i>{{ feature }}</p>
+                                <p class="mb-0"><i class="fa fa-arrow-right text-start me-2"></i>{{ feature }}</p>
                             </div>
                         {% endfor %}
                     </div>
-                    <a class="btn btn-primary py-3 px-5 mt-2" href="{{ about.read_more_url }}">Read More</a>
+                    <a class="btn btn-primary py-3 px-5 mt-2" href="{{ about.read_more_url }}" style=" background-color: #515966;">Read More</a>
                 </div>
             </div>
         </div>
@@ -192,8 +175,8 @@
                         <div class="position-relative overflow-hidden">
                             <img class="img-fluid" src="{{ course.image.url }}" alt="{{ course.title }}">
                             <div class="w-100 d-flex justify-content-center position-absolute bottom-0 start-0 mb-4">
-                                <a href="{% url 'course_detail' course.id %}" class="flex-shrink-0 btn btn-sm btn-primary px-3 border-end" style="border-radius: 30px 0 0 30px;">Read More</a>
-                                <a href="" class="flex-shrink-0 btn btn-sm btn-primary px-3" style="border-radius: 0 30px 30px 0;">Join Now</a>
+                                <a href="{% url 'course_detail' course.id %}" class="flex-shrink-0 btn btn-sm btn-primary px-3 border-end" style="border-radius: 30px 0 0 30px; background-color: #515966;">Read More</a>
+                                <a href="" class="flex-shrink-0 btn btn-sm btn-primary px-3" style="border-radius: 0 30px 30px 0; background-color: #515966;">Join Now</a>
                             </div>
                         </div>
                         <div class="text-center p-4 pb-0">
@@ -221,59 +204,52 @@
 </div>
 <!-- Courses End -->
 
-    <!-- Team Start -->
-    <div class="container-xxl py-5">
-        <div class="container">
-            <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
-                <h6 class="section-title bg-white text-center text-primary px-3">Instructors</h6>
-                <h1 class="mb-5">Expert Instructors</h1>
+    
+<!-- Testimonial Start -->
+<div class="container-xxl py-5 wow fadeInUp" data-wow-delay="0.1s">
+    <div class="container">
+        <div class="text-center">
+            <h6 class="section-title bg-white text-center text-primary px-3">Testimonial</h6>
+            <h1 class="mb-5">Our Students Say!</h1>
+        </div>
+        <div class="owl-carousel testimonial-carousel position-relative">
+            <div class="testimonial-item text-center">
+                <img class="border rounded-circle p-2 mx-auto mb-3" src="{% static 'img/testimonial-1.jpg' %}" style="width: 80px; height: 80px;">
+                <h5 class="mb-0">Client Name</h5>
+                <p>Profession</p>
+                <div class="testimonial-text bg-light text-center p-4">
+                    <p class="mb-0">Tempor erat elitr rebum at clita. Diam dolor diam ipsum sit diam amet diam et eos. Clita erat ipsum et lorem et sit.</p>
+                </div>
             </div>
-            <div class="row g-4">
-                {% for instructor in instructors %}
-                    <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="{{ instructor.delay }}s">
-                        <div class="team-item bg-light">
-                            <div class="overflow-hidden">
-                                <img class="img-fluid" src="{{ instructor.image.url }}" alt="">
-                            </div>
-                            <div class="position-relative d-flex justify-content-center" style="margin-top: -23px;">
-                                <div class="bg-light d-flex justify-content-center pt-2 px-1">
-                                    <a class="btn btn-sm-square btn-primary mx-1" href="{{ instructor.facebook_url }}"><i class="fab fa-facebook-f"></i></a>
-                                    <a class="btn btn-sm-square btn-primary mx-1" href="{{ instructor.twitter_url }}"><i class="fab fa-twitter"></i></a>
-                                    <a class="btn btn-sm-square btn-primary mx-1" href="{{ instructor.instagram_url }}"><i class="fab fa-instagram"></i></a>
-                                </div>
-                            </div>
-                            <div class="text-center p-4">
-                                <h5 class="mb-0">{{ instructor.name }}</h5>
-                                <small>{{ instructor.designation }}</small>
-                            </div>
-                        </div>
-                    </div>
-                {% endfor %}
+            <div class="testimonial-item text-center">
+                <img class="border rounded-circle p-2 mx-auto mb-3" src="{% static 'img/testimonial-2.jpg' %}" style="width: 80px; height: 80px;">
+                <h5 class="mb-0">Client Name</h5>
+                <p>Profession</p>
+                <div class="testimonial-text bg-light text-center p-4">
+                    <p class="mb-0">Tempor erat elitr rebum at clita. Diam dolor diam ipsum sit diam amet diam et eos. Clita erat ipsum et lorem et sit.</p>
+                </div>
+            </div>
+            <div class="testimonial-item text-center">
+                <img class="border rounded-circle p-2 mx-auto mb-3" src="{% static 'img/testimonial-3.jpg' %}" style="width: 80px; height: 80px;">
+                <h5 class="mb-0">Client Name</h5>
+                <p>Profession</p>
+                <div class="testimonial-text bg-light text-center p-4">
+                    <p class="mb-0">Tempor erat elitr rebum at clita. Diam dolor diam ipsum sit diam amet diam et eos. Clita erat ipsum et lorem et sit.</p>
+                </div>
+            </div>
+            <div class="testimonial-item text-center">
+                <img class="border rounded-circle p-2 mx-auto mb-3" src="{% static 'img/testimonial-4.jpg' %}" style="width: 80px; height: 80px;">
+                <h5 class="mb-0">Client Name</h5>
+                <p>Profession</p>
+                <div class="testimonial-text bg-light text-center p-4">
+                    <p class="mb-0">Tempor erat elitr rebum at clita. Diam dolor diam ipsum sit diam amet diam et eos. Clita erat ipsum et lorem et sit.</p>
+                </div>
             </div>
         </div>
     </div>
-    <!-- Team End -->
+</div>
+<!-- Testimonial End -->
 
-    <!-- Testimonial Start -->
-    <div class="container-xxl py-5 wow fadeInUp" data-wow-delay="0.1s">
-        <div class="container">
-            <div class="text-center">
-                <h6 class="section-title bg-white text-center text-primary px-3">Testimonial</h6>
-                <h1 class="mb-5">Our Students Say!</h1>
-            </div>
-            <div class="owl-carousel testimonial-carousel position-relative">
-                {% for testimonial in testimonials %}
-                    <div class="testimonial-item text-center">
-                        <img class="border rounded-circle p-2 mx-auto mb-3" src="{{ testimonial.image.url }}" style="width: 80px; height: 80px;" alt="">
-                        <h5 class="mb-0">{{ testimonial.client_name }}</h5>
-                        <p>{{ testimonial.profession }}</p>
-                        <div class="testimonial-text bg-light text-center p-4">
-                            <p class="mb-0">{{ testimonial.text }}</p>
-                        </div>
-                    </div>
-                {% endfor %}
-            </div>
-        </div>
-    </div>
-    <!-- Testimonial End -->
+
+
 {% endblock %}

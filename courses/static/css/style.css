@@ -1,6 +1,7 @@
-/********** Template CSS **********/
+/* static/css/style.css */
+
 :root {
-    --primary: #06BBCC;
+    --primary: #515966;
     --light: #F0FBFC;
     --dark: #181d38;
 }
@@ -21,7 +22,6 @@
     z-index: 99;
 }
 
-
 /*** Spinner ***/
 #spinner {
     opacity: 0;
@@ -35,7 +35,6 @@
     visibility: visible;
     opacity: 1;
 }
-
 
 /*** Button ***/
 .btn {
@@ -75,7 +74,6 @@
     border-radius: 0px;
 }
 
-
 /*** Navbar ***/
 .navbar .dropdown-toggle::after {
     border: none;
@@ -89,15 +87,16 @@
 .navbar-light .navbar-nav .nav-link {
     margin-right: 30px;
     padding: 25px 0;
-    color: #FFFFFF;
+    color: var(--dark);
     font-size: 15px;
     text-transform: uppercase;
     outline: none;
+    font-weight: 500;
 }
 
 .navbar-light .navbar-nav .nav-link:hover,
 .navbar-light .navbar-nav .nav-link.active {
-    color: var(--primary);
+    color: #515966;
 }
 
 @media (max-width: 991.98px) {
@@ -114,11 +113,6 @@
 .navbar-light .navbar-brand,
 .navbar-light a.btn {
     height: 75px;
-}
-
-.navbar-light .navbar-nav .nav-link {
-    color: var(--dark);
-    font-weight: 500;
 }
 
 .navbar-light.sticky-top {
@@ -149,7 +143,6 @@
         opacity: 1;
     }
 }
-
 
 /*** Header carousel ***/
 @media (max-width: 768px) {
@@ -192,8 +185,8 @@
 
 .header-carousel .owl-nav .owl-prev:hover,
 .header-carousel .owl-nav .owl-next:hover {
-    background: var(--primary);
-    border-color: var(--primary);
+    background: #515966;
+    border-color: #515966;
 }
 
 .page-header {
@@ -211,7 +204,6 @@
     color: var(--light);
 }
 
-
 /*** Section Title ***/
 .section-title {
     position: relative;
@@ -226,7 +218,7 @@
     height: 2px;
     top: 4px;
     left: -40px;
-    background: var(--primary);
+    background: #515966;
     z-index: -1;
 }
 
@@ -237,7 +229,7 @@
     height: 2px;
     bottom: 5px;
     left: -60px;
-    background: var(--primary);
+    background: #515966;
     z-index: -1;
 }
 
@@ -260,7 +252,7 @@
 
 .service-item:hover {
     margin-top: -10px;
-    background: var(--primary);
+    background: #515966;
 }
 
 .service-item * {
@@ -337,7 +329,7 @@
 }
 
 .testimonial-carousel .owl-item.center .testimonial-text {
-    background: var(--primary) !important;
+    background: #515966 !important;
 }
 
 .testimonial-carousel .owl-item.center .testimonial-text * {
@@ -362,8 +354,8 @@
 }
 
 .testimonial-carousel .owl-dot.active {
-    background: var(--primary);
-    border-color: var(--primary);
+    background: #515966;
+    border-color: #515966;
 }
 
 
@@ -383,7 +375,7 @@
 }
 
 .footer .btn.btn-social:hover {
-    color: var(--primary);
+    color: #515966;
 }
 
 .footer .btn.btn-link {
@@ -431,4 +423,20 @@
     margin-right: 0;
     padding-right: 0;
     border-right: none;
+}
+
+/*** Custom Button ***/
+.btn-custom {
+    background-color: #ff5733; /* New background color */
+    color: #ffffff; /* Text color */
+    border: none; /* Remove border */
+    transition: background-color 0.3s ease; /* Smooth transition */
+}
+
+.btn-custom:hover {
+    background-color: #e14e2b; /* Background color on hover */
+    color: #ffffff; /* Text color on hover */
+} 
+.btn-primary{
+    background-color: #515966;
 }

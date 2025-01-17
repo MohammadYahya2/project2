@@ -5,23 +5,53 @@
 {% block title %}عن الموقع - eLEARNING{% endblock %}
 
 {% block content %}
-    <div class="container mt-5">
-        <h2>عن الموقع</h2>
-        {% if about_info %}
-            <img src="{{ about_info.image.url }}" alt="About Image" class="img-fluid mb-4">
-            <p>{{ about_info.description }}</p>
-            <p>{{ about_info.more_description }}</p>
-            <h4>ميزاتنا:</h4>
-            <ul>
-                {% for feature in about_info.features %}
-                    <li>{{ feature }}</li>
-                {% endfor %}
-            </ul>
-            {% if about_info.read_more_url %}
-                <a href="{{ about_info.read_more_url }}" class="btn btn-primary">اقرأ المزيد</a>
-            {% endif %}
-        {% else %}
-            <p>لا توجد معلومات متاحة حول الموقع حالياً.</p>
-        {% endif %}
+    <!-- Header Start -->
+    <div class="container-fluid bg-primary py-5 mb-5 page-header">
+        <div class="container py-5">
+            <div class="row justify-content-center">
+                <div class="col-lg-10 text-center">
+                    <h1 class="display-3 text-white animated slideInDown">عن الموقع</h1>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb justify-content-center">
+                            <li class="breadcrumb-item"><a class="text-white" href="{% url 'home' %}">الرئيسية</a></li>
+                            <li class="breadcrumb-item text-white active" aria-current="page">عن الموقع</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
     </div>
+    <!-- Header End -->
+
+    <!-- About Start -->
+    <div class="container-xxl py-5">
+        <div class="container">
+            <div class="row g-5">
+                <div class="col-lg-6 wow fadeInUp" data-wow-delay="0.1s" style="min-height: 400px;">
+                    <div class="position-relative h-100">
+                        <img class="img-fluid position-absolute w-100 h-100" src="{{ about_info.image.url }}" alt="About Image" style="object-fit: cover;">
+                    </div>
+                </div>
+                <div class="col-lg-6 wow fadeInUp" data-wow-delay="0.3s">
+                    <h6 class="section-title bg-white text-start text-primary pe-3">حولنا</h6>
+                    <h1 class="mb-4">مرحباً بكم في eLEARNING</h1>
+                    <p class="mb-4">{{ about_info.description }}</p>
+                    <p class="mb-4">{{ about_info.more_description }}</p>
+                    <div class="row gy-2 gx-4 mb-4">
+                        {% for feature in about_info.features %}
+                            <div class="col-sm-6">
+                                <p class="mb-0"><i class="fa fa-arrow-right text-primary me-2"></i>{{ feature }}</p>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    {% if about_info.read_more_url %}
+                        <a class="btn btn-primary py-3 px-5 mt-2" href="{{ about_info.read_more_url }}">اقرأ المزيد</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- About End -->
+
+    <!-- يمكنك إضافة أقسام أخرى مثل فريق العمل، التوصيات، إلخ هنا إذا رغبت -->
 {% endblock %}
