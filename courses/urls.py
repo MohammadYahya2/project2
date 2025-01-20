@@ -18,5 +18,9 @@ urlpatterns = [
     path('team/', views.team, name='team'),  # نمط URL لصفحة "فريق العمل"
     path('testimonial/', views.testimonial, name='testimonial'),  # نمط URL لصفحة "التوصيات"
     path('contact/', views.contact, name='contact'),  # نمط URL لصفحة "اتصل بنا"
+    path('profile/', views.profile, name='profile'),  # إضافة هذا السطر
+    path('course/<int:pk>/', views.course_detail, name='course_detail'),
+
+
     # يمكنك إضافة أنماط URL الأخرى مثل 'error' إذا كنت تنوي التعامل مع عرض مخصص
 ]

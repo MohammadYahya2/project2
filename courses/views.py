@@ -54,9 +54,10 @@ def register(request):
 class UserLoginView(LoginView):
     form_class = UserLoginForm
     template_name = 'courses/login.html'
-
+    def get_success_url(self):
+        messages.success(self.request, f'مرحبا {self.request.user.username}! تم تسجيل الدخول بنجاح.')
+        return reverse_lazy('home')
     def form_valid(self, form):
-        messages.success(self.request, f'مرحبا {form.get_user().username}! تم تسجيل الدخول بنجاح.')
         return super().form_valid(form)
 
     def form_invalid(self, form):
@@ -66,9 +67,7 @@ class UserLoginView(LoginView):
 # 4. تسجيل الخروج باستخدام عارض Django المدمج
 class UserLogoutView(LogoutView):
     next_page = reverse_lazy('login')
-
     def dispatch(self, request, *args, **kwargs):
-        messages.success(request, 'تم تسجيل الخروج بنجاح.')
         return super().dispatch(request, *args, **kwargs)
 
 # 5. إضافة كورس جديد
@@ -92,6 +91,7 @@ def add_course(request):
 def course_detail(request, pk):
     course = get_object_or_404(Course, pk=pk)
     return render(request, 'courses/course_detail.html', {'course': course})
+
 
 # 7. طلب استشارة
 @login_required
@@ -159,3 +159,7 @@ def contact(request):
     else:
         form = ContactForm()
     return render(request, 'courses/contact.html', {'form': form})
+
+@login_required
+def profile(request):
+    return render(request, 'courses/profile.html')

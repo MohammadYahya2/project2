@@ -3,7 +3,7 @@
 {% extends 'courses/base.html' %}
 {% load static %}
 
-{% block title %}Home - eLEARNING{% endblock %}
+{% block title %}Home Mj{% endblock %}
 
 {% block content %}
 
@@ -34,7 +34,36 @@
 
 
 
-    <!-- Service Start -->
+    
+
+    <!-- About Start -->
+    <div class="container-xxl py-5">
+        <div class="container">
+            <div class="row g-5">
+                <div class="col-lg-6 wow fadeInUp" data-wow-delay="0.1s" style="min-height: 400px;">
+                    <div class="position-relative h-100">
+                        <img class="img-fluid position-absolute w-100 h-100" src="{{ about.image.url }}" alt="" style="object-fit: cover;">
+                    </div>
+                </div>
+                <div class="col-lg-6 wow fadeInUp" data-wow-delay="0.3s">
+                    <h6 class="section-title bg-white text-start text-primary pe-3">About Us</h6>
+                    <h1 class="mb-4">Welcome to MJ</h1>
+                    <p class="mb-4">{{ about.description }}</p>
+                    <p class="mb-4">{{ about.more_description }}</p>
+                    <div class="row gy-2 gx-4 mb-4">
+                        {% for feature in about.features %}
+                            <div class="col-sm-6">
+                                <p class="mb-0"><i class="fa fa-arrow-right text-start me-2"></i>{{ feature }}</p>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <a class="btn btn-primary py-3 px-5 mt-2" href="{{ about.read_more_url }}" style=" background-color: #515966;">Read More</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- About End -->
+     <!-- Service Start -->
     <div class="container-xxl py-5">
         <div class="container">
             <div class="row g-4">
@@ -78,34 +107,6 @@
         </div>
     </div>
 
-
-    <!-- About Start -->
-    <div class="container-xxl py-5">
-        <div class="container">
-            <div class="row g-5">
-                <div class="col-lg-6 wow fadeInUp" data-wow-delay="0.1s" style="min-height: 400px;">
-                    <div class="position-relative h-100">
-                        <img class="img-fluid position-absolute w-100 h-100" src="{{ about.image.url }}" alt="" style="object-fit: cover;">
-                    </div>
-                </div>
-                <div class="col-lg-6 wow fadeInUp" data-wow-delay="0.3s">
-                    <h6 class="section-title bg-white text-start text-primary pe-3">About Us</h6>
-                    <h1 class="mb-4">Welcome to MJ</h1>
-                    <p class="mb-4">{{ about.description }}</p>
-                    <p class="mb-4">{{ about.more_description }}</p>
-                    <div class="row gy-2 gx-4 mb-4">
-                        {% for feature in about.features %}
-                            <div class="col-sm-6">
-                                <p class="mb-0"><i class="fa fa-arrow-right text-start me-2"></i>{{ feature }}</p>
-                            </div>
-                        {% endfor %}
-                    </div>
-                    <a class="btn btn-primary py-3 px-5 mt-2" href="{{ about.read_more_url }}" style=" background-color: #515966;">Read More</a>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- About End -->
 
  <!-- Categories Start -->
 <div class="container-xxl py-5 category">

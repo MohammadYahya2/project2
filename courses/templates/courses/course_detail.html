@@ -1,57 +1,109 @@
 <!-- courses/templates/courses/course_detail.html -->
 
 {% extends 'courses/base.html' %}
+{% load static %}
 
-{% block title %}{{ course.title }} - موقع الكورسات{% endblock %}
+{% block title %}{{ course.title }} - تفاصيل الكورس{% endblock %}
 
 {% block content %}
-    <!-- Carousel Start -->
-    <div class="container-fluid p-0 mb-5">
-        <div class="owl-carousel header-carousel position-relative">
-            <div class="owl-carousel-item position-relative">
-                <img class="img-fluid" src="{{ course.image.url }}" alt="">
-                <div class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center" style="background: rgba(24, 29, 56, .7);">
-                    <div class="container">
-                        <div class="row justify-content-start">
-                            <div class="col-sm-10 col-lg-8">
-                                <h5 class="text-primary text-uppercase mb-3 animated slideInDown">{{ course.title }}</h5>
-                                <h1 class="display-3 text-white animated slideInDown">{{ course.title }}</h1>
-                                <p class="fs-5 text-white mb-4 pb-2">{{ course.description }}</p>
-                                <a href="{% url 'join_course' course.pk %}" class="btn btn-primary py-md-3 px-md-5 me-3 animated slideInLeft">انضم الآن</a>
+
+<div class="container-xxl py-5">
+    <div class="container">
+        <!-- عنوان الكورس -->
+        <div class="row">
+            <div class="col-12">
+                <h1 class="mb-4">{{ course.title }}</h1>
+            </div>
+        </div>
+        
+        <!-- صورة الكورس -->
+        <div class="row">
+            <div class="col-md-6">
+                <img src="{{ course.image.url }}" class="img-fluid rounded" alt="{{ course.title }}">
+            </div>
+            
+            <!-- تفاصيل الكورس -->
+            <div class="col-md-6">
+                <h3 class="mb-3">تفاصيل الكورس</h3>
+                <p>{{ course.description }}</p>
+                
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item"><strong>السعر:</strong> ${{ course.price }}</li>
+                    <li class="list-group-item"><strong>المدرب:</strong> {{ course.instructor.name }}</li>
+                    <li class="list-group-item"><strong>المدة:</strong> {{ course.duration }} ساعات</li>
+                    <li class="list-group-item"><strong>عدد الطلاب:</strong> {{ course.students_count }}</li>
+                    <li class="list-group-item"><strong>التقييم:</strong> 
+                        {% for star in "12345" %}
+                            {% if forloop.counter <= course.rating_count %}
+                                <i class="fa fa-star text-primary"></i>
+                            {% else %}
+                                <i class="fa fa-star text-secondary"></i>
+                            {% endif %}
+                        {% endfor %}
+                        ({{ course.rating_count }})
+                    </li>
+                </ul>
+                
+                <!-- أزرار التفاعل -->
+                <div class="mt-4">
+                    <a href="#" class="btn btn-primary me-2">الانضمام الآن</a>
+                    <a href="#" class="btn btn-outline-primary">إضافة إلى المفضلة</a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- قسم المحتويات -->
+        <div class="row mt-5">
+            <div class="col-12">
+                <h3>محتويات الكورس</h3>
+                <!-- يمكنك إضافة محتويات إضافية هنا مثل الدروس، الملفات، إلخ -->
+                <p>هنا يمكنك إضافة تفاصيل إضافية حول محتويات الكورس، مثل قائمة الدروس، الموارد، وما إلى ذلك.</p>
+            </div>
+        </div>
+        
+        <!-- قسم التقييمات -->
+        <div class="row mt-5">
+            <div class="col-12">
+                <h3>تقييمات الطلاب</h3>
+                <!-- نموذج لإضافة تقييم -->
+                <form method="POST" action="">
+                    {% csrf_token %}
+                    <!-- يمكنك إضافة حقول لتقييم الكورس هنا -->
+                    <div class="mb-3">
+                        <label for="rating" class="form-label">تقييمك للكورس</label>
+                        <select class="form-select" id="rating" name="rating">
+                            <option selected>اختر تقييمك</option>
+                            <option value="1">1 - ضعيف</option>
+                            <option value="2">2 - جيد</option>
+                            <option value="3">3 - جيد جدًا</option>
+                            <option value="4">4 - ممتاز</option>
+                            <option value="5">5 - رائع</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="review" class="form-label">ملاحظاتك</label>
+                        <textarea class="form-control" id="review" name="review" rows="3" placeholder="اكتب ملاحظاتك هنا..."></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-success">إرسال التقييم</button>
+                </form>
+                
+                <!-- عرض التقييمات -->
+                <div class="mt-4">
+                    {% for testimonial in course.testimonial_set.all %}
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ testimonial.client_name }}</h5>
+                                <h6 class="card-subtitle mb-2 text-muted">{{ testimonial.profession }}</h6>
+                                <p class="card-text">{{ testimonial.text }}</p>
                             </div>
                         </div>
-                    </div>
+                    {% empty %}
+                        <p>لا توجد تقييمات لهذا الكورس بعد.</p>
+                    {% endfor %}
                 </div>
             </div>
         </div>
     </div>
+</div>
 
-    <!-- Course Details Start -->
-    <div class="container-xxl py-5">
-        <div class="container">
-            <div class="row g-5">
-                <div class="col-lg-8">
-                    <h1 class="mb-4">{{ course.title }}</h1>
-                    <p>{{ course.description }}</p>
-                    <h4 class="mb-3">محتويات الكورس</h4>
-                    <ul>
-                        {% for content in course.contents %}
-                            <li>{{ content }}</li>
-                        {% endfor %}
-                    </ul>
-                </div>
-                <div class="col-lg-4">
-                    <div class="bg-light p-4">
-                        <h4>معلومات الكورس</h4>
-                        <p><strong>السعر:</strong> {{ course.price }} ريال</p>
-                        <p><strong>الفئة:</strong> {{ course.category.name }}</p>
-                        <p><strong>المدة:</strong> {{ course.duration }} ساعة</p>
-                        <p><strong>عدد الطلاب:</strong> {{ course.students_count }}</p>
-                        <a href="{% url 'join_course' course.pk %}" class="btn btn-primary w-100">انضم الآن</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Course Details End -->
 {% endblock %}

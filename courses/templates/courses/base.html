@@ -81,8 +81,30 @@
                 </div>
                 <a href="{% url 'contact' %}" class="nav-item nav-link {% if request.resolver_match.url_name == 'contact' %}active{% endif %}">Contact</a>
             </div>
-            <a href="{% url 'add_course' %}"  class="btn btn-link py-4 px-lg-5 d-none d-lg-block">Join Now<i class="fa fa-arrow-right ms-3"></i></a>
-        </div>
+            {% if user.is_authenticated %}
+            <div class="dropdown d-none d-lg-block">
+                <button class="btn btn-link py-4 px-lg-5 dropdown-toggle" type="button" id="userDropdownButton" data-bs-toggle="dropdown" aria-expanded="false">
+                    {{ user.username }} <i class="fa fa-arrow-down ms-2"></i>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdownButton">
+                    <li><a class="dropdown-item" href="{% url 'profile' %}"><i class="fa fa-user me-2"></i>Profile</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="{% url 'logout' %}"><i class="fa fa-sign-out-alt me-2"></i>Logout</a></li>
+                </ul>
+            </div>
+        {% else %}
+        <a href="{% url 'login' %}?next={% url 'home' %}" class="btn btn-link py-4 px-lg-5 d-none d-lg-block join-now">Join Now<i class="fa fa-arrow-right ms-3"></i></a>
+
+        <style>
+          .join-now {
+            color: #515966; /* اللون المطلوب */
+          }
+          .join-now:hover {
+            color: #515966; /* التأكيد على نفس اللون عند التحويم إذا لزم الأمر */
+          }
+        </style>
+                {% endif %}
+                </div>
     </nav>
     <!-- Navbar End -->
 

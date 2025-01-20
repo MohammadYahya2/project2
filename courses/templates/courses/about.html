@@ -2,7 +2,7 @@
 
 {% extends 'courses/base.html' %}
 
-{% block title %}عن الموقع - eLEARNING{% endblock %}
+{% block title %}about Mj{% endblock %}
 
 {% block content %}
     <!-- Header Start -->
@@ -10,11 +10,11 @@
         <div class="container py-5">
             <div class="row justify-content-center">
                 <div class="col-lg-10 text-center">
-                    <h1 class="display-3 text-white animated slideInDown">عن الموقع</h1>
+                    <h1 class="display-3 text-white animated slideInDown"> About Us</h1>
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb justify-content-center">
-                            <li class="breadcrumb-item"><a class="text-white" href="{% url 'home' %}">الرئيسية</a></li>
-                            <li class="breadcrumb-item text-white active" aria-current="page">عن الموقع</li>
+                            <li class="breadcrumb-item"><a class="text-white" href="{% url 'home' %}">Home</a></li>
+                            <li class="breadcrumb-item text-white active" aria-current="page">About Us</li>
                         </ol>
                     </nav>
                 </div>
@@ -33,8 +33,8 @@
                     </div>
                 </div>
                 <div class="col-lg-6 wow fadeInUp" data-wow-delay="0.3s">
-                    <h6 class="section-title bg-white text-start text-primary pe-3">حولنا</h6>
-                    <h1 class="mb-4">مرحباً بكم في eLEARNING</h1>
+                    <h6 class="section-title bg-white text-start text-primary pe-3">About Us</h6>
+                    <h1 class="mb-4">Welcome to MJ</h1>
                     <p class="mb-4">{{ about_info.description }}</p>
                     <p class="mb-4">{{ about_info.more_description }}</p>
                     <div class="row gy-2 gx-4 mb-4">
@@ -45,7 +45,7 @@
                         {% endfor %}
                     </div>
                     {% if about_info.read_more_url %}
-                        <a class="btn btn-primary py-3 px-5 mt-2" href="{{ about_info.read_more_url }}">اقرأ المزيد</a>
+                    <a class="btn btn-primary py-3 px-5 mt-2" href="{{ about.read_more_url }}" style=" background-color: #515966;">Read More</a>
                     {% endif %}
                 </div>
             </div>

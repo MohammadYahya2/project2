@@ -2,45 +2,326 @@
 
 {% extends 'courses/base.html' %}
 
-{% block title %}تسجيل حساب جديد - موقع الكورسات{% endblock %}
+{% block title %}Sign Up - Course Site{% endblock %}
 
 {% block content %}
-    <div class="container mt-5">
-        <h2>تسجيل حساب جديد</h2>
-        <form method="POST">
-            {% csrf_token %}
-            {{ form.non_field_errors }}
-            <div class="mb-3">
-                {{ form.first_name.label_tag }}
-                {{ form.first_name }}
-                {{ form.first_name.errors }}
+<div class="d-flex align-items-center justify-content-center min-vh-100 p-3" style="background: linear-gradient(135deg, #6f6e7a, #515966);">
+    <div class="register-container shadow rounded bg-white w-100" style="max-width: 400px;">
+        <div class="p-4">
+            <h2 class="mb-3 text-center" style="color: #515966; font-size: 24px; font-weight: bold;">Create an Account</h2>
+            <p class="text-center text-muted mb-4" style="font-size: 14px;">Join us and start learning today</p>
+
+            <!-- Progress Bar -->
+            <div class="progress mb-4" style="height: 8px;">
+                <div id="progress-bar" class="progress-bar" role="progressbar" style="width: 33%;" aria-valuenow="33" aria-valuemin="0" aria-valuemax="100"></div>
             </div>
-            <div class="mb-3">
-                {{ form.last_name.label_tag }}
-                {{ form.last_name }}
-                {{ form.last_name.errors }}
+
+            <!-- نموذج متعدد الخطوات -->
+            <form method="POST" id="registration-form">
+                {% csrf_token %}
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger text-center" role="alert">
+                        {{ form.non_field_errors }}
+                    </div>
+                {% endif %}
+
+                <!-- الخطوة 1: المعلومات الشخصية -->
+                <div class="form-step" id="step-1">
+                    <div class="mb-3">
+                        <label for="id_first_name" class="form-label" style="font-weight: bold; color: #333; font-size: 14px;">First Name</label>
+                        <input type="text" name="first_name" id="id_first_name" class="form-control" placeholder="Enter your first name" value="{{ form.first_name.value|default_if_none:'' }}" required>
+                        {% if form.first_name.errors %}
+                            <div class="text-danger small mt-1">
+                                {{ form.first_name.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_last_name" class="form-label" style="font-weight: bold; color: #333; font-size: 14px;">Last Name</label>
+                        <input type="text" name="last_name" id="id_last_name" class="form-control" placeholder="Enter your last name" value="{{ form.last_name.value|default_if_none:'' }}" required>
+                        {% if form.last_name.errors %}
+                            <div class="text-danger small mt-1">
+                                {{ form.last_name.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="mb-4">
+                        <label for="id_email" class="form-label" style="font-weight: bold; color: #333; font-size: 14px;">Email Address</label>
+                        <input type="email" name="email" id="id_email" class="form-control" placeholder="Enter your email" value="{{ form.email.value|default_if_none:'' }}" required>
+                        {% if form.email.errors %}
+                            <div class="text-danger small mt-1">
+                                {{ form.email.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <button type="button" class="btn btn-primary w-100" onclick="nextStep()">Next</button>
+                </div>
+
+                <!-- الخطوة 2: تفاصيل الحساب -->
+                <div class="form-step d-none" id="step-2">
+                    <div class="mb-3">
+                        <label for="id_username" class="form-label" style="font-weight: bold; color: #333; font-size: 14px;">Username</label>
+                        <input type="text" name="username" id="id_username" class="form-control" placeholder="Choose a username" value="{{ form.username.value|default_if_none:'' }}" required>
+                        {% if form.username.errors %}
+                            <div class="text-danger small mt-1">
+                                {{ form.username.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_password1" class="form-label" style="font-weight: bold; color: #333; font-size: 14px;">Password</label>
+                        <input type="password" name="password1" id="id_password1" class="form-control" placeholder="Enter your password" required>
+                        {% if form.password1.errors %}
+                            <div class="text-danger small mt-1">
+                                {{ form.password1.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="mb-4">
+                        <label for="id_password2" class="form-label" style="font-weight: bold; color: #333; font-size: 14px;">Confirm Password</label>
+                        <input type="password" name="password2" id="id_password2" class="form-control" placeholder="Confirm your password" required>
+                        {% if form.password2.errors %}
+                            <div class="text-danger small mt-1">
+                                {{ form.password2.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <button type="button" class="btn btn-primary" onclick="prevStep()">Previous</button>
+                        <button type="button" class="btn btn-primary" onclick="nextStep()">Next</button>
+                    </div>
+                </div>
+
+                <!-- الخطوة 3: التأكيد والمراجعة -->
+                <div class="form-step d-none" id="step-3">
+                    <div class="mb-3">
+                        <p><strong>First Name:</strong> <span id="confirm-first-name"></span></p>
+                    </div>
+                    <div class="mb-3">
+                        <p><strong>Last Name:</strong> <span id="confirm-last-name"></span></p>
+                    </div>
+                    <div class="mb-3">
+                        <p><strong>Email Address:</strong> <span id="confirm-email"></span></p>
+                    </div>
+                    <div class="mb-3">
+                        <p><strong>Username:</strong> <span id="confirm-username"></span></p>
+                    </div>
+                    <div class="mb-4">
+                        <p><strong>Password:</strong> ********</p>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <button type="button" class="btn btn-primary" onclick="prevStep()">Previous</button>
+                        <button type="submit" class="btn btn-success">Confirm & Sign Up</button>
+                    </div>
+                </div>
+                
+            </form>
+
+            <div class="signup-link mt-3 text-center">
+                <p class="text-muted" style="font-size: 14px;">Already have an account? <a href="{% url 'login' %}" class="custom-login-link">Login</a></p>
             </div>
-            <div class="mb-3">
-                {{ form.email.label_tag }}
-                {{ form.email }}
-                {{ form.email.errors }}
-            </div>
-            <div class="mb-3">
-                {{ form.username.label_tag }}
-                {{ form.username }}
-                {{ form.username.errors }}
-            </div>
-            <div class="mb-3">
-                {{ form.password1.label_tag }}
-                {{ form.password1 }}
-                {{ form.password1.errors }}
-            </div>
-            <div class="mb-3">
-                {{ form.password2.label_tag }}
-                {{ form.password2 }}
-                {{ form.password2.errors }}
-            </div>
-            <button type="submit" class="btn btn-primary">تسجيل</button>
-        </form>
+        </div>
     </div>
+
+    <style>
+        /* تحسين الخلفية */
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #6f6e7a, #515966);
+        }
+
+        /* الحاوية الرئيسية */
+        .register-container {
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            animation: fadeIn 0.8s ease-in-out;
+        }
+
+        /* زر التسجيل */
+        .btn {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .btn-primary {
+            background-color: #2d3e50;
+            border: none;
+            transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: #514fb1;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-secondary {
+            background-color: #cccccc;
+            border: none;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background-color: #b3b3b3;
+        }
+
+        .btn-success {
+            background-color: #28a745;
+            border: none;
+            transition: background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .btn-success:hover {
+            background-color: #218838;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        /* روابط النصوص */
+        .custom-login-link {
+            color: #6c63ff;
+            font-weight: 600;
+            text-decoration: none;
+            transition: color 0.3s ease, text-decoration 0.3s ease;
+        }
+
+        .custom-login-link:hover {
+            color: #514fb1;
+            text-decoration: underline;
+        }
+
+        /* إدخال الحقول */
+        .form-control {
+            height: 40px;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            font-size: 14px;
+            padding: 8px 12px;
+        }
+
+        .form-control:focus {
+            border-color: #6c63ff;
+            box-shadow: 0 0 5px rgba(108, 99, 255, 0.5);
+        }
+
+        /* نصوص وتحسين العناوين */
+        h2 {
+            font-family: 'Poppins', sans-serif;
+            letter-spacing: 0.5px;
+        }
+
+        p.text-muted {
+            font-family: 'Roboto', sans-serif;
+        }
+
+        /* تأثيرات الدخول */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* استعلامات وسائط لتحسين الاستجابة */
+        @media (max-width: 576px) {
+            .register-container {
+                padding: 20px;
+                max-width: 100%;
+            }
+
+            h2 {
+                font-size: 20px;
+            }
+
+            p.text-muted {
+                font-size: 12px;
+            }
+
+            .form-label {
+                font-size: 12px;
+            }
+
+            .form-control {
+                font-size: 12px;
+                padding: 6px 10px;
+            }
+
+            .btn {
+                font-size: 12px;
+                padding: 6px;
+            }
+
+            .signup-link p {
+                font-size: 12px;
+            }
+        }
+    </style>
+
+    <!-- JavaScript للتحكم في الخطوات -->
+    <script>
+        let currentStep = 1;
+        const totalSteps = 3;
+
+        function showStep(step) {
+            for (let i = 1; i <= totalSteps; i++) {
+                document.getElementById(`step-${i}`).classList.add('d-none');
+            }
+            document.getElementById(`step-${step}`).classList.remove('d-none');
+            updateProgressBar(step);
+        }
+
+        function nextStep() {
+    if (currentStep < totalSteps) {
+        // التحقق من صحة الحقول في الخطوة الحالية قبل الانتقال
+        const currentForm = document.getElementById(`step-${currentStep}`);
+        const inputs = currentForm.querySelectorAll('input');
+        let valid = true;
+        inputs.forEach(input => {
+            if (!input.checkValidity()) {
+                input.reportValidity();
+                valid = false;
+            }
+        });
+        if (valid) {
+            // إذا كانت الخطوة التالية هي الخطوة 3، قم بتحديث البيانات
+            if (currentStep === 2) {
+                document.getElementById('confirm-first-name').innerText = document.getElementById('id_first_name').value;
+                document.getElementById('confirm-last-name').innerText = document.getElementById('id_last_name').value;
+                document.getElementById('confirm-email').innerText = document.getElementById('id_email').value;
+                document.getElementById('confirm-username').innerText = document.getElementById('id_username').value;
+            }
+
+            currentStep++;
+            showStep(currentStep);
+        }
+    }
+}
+
+
+        function prevStep() {
+            if (currentStep > 1) {
+                currentStep--;
+                showStep(currentStep);
+            }
+        }
+
+        function updateProgressBar(step) {
+            const progressBar = document.getElementById('progress-bar');
+            const percentage = (step / totalSteps) * 100;
+            progressBar.style.width = `${percentage}%`;
+            progressBar.setAttribute('aria-valuenow', percentage);
+        }
+
+        // بدء من الخطوة الأولى
+        document.addEventListener('DOMContentLoaded', function() {
+            showStep(currentStep);
+        });
+    </script>
+</div>
 {% endblock %}

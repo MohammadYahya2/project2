@@ -1,0 +1,19 @@
+{% extends 'courses/base.html' %}
+
+{% block title %}ملفك الشخصي{% endblock %}
+
+{% block content %}
+    <div class="container mt-5">
+        <h2>ملفك الشخصي</h2>
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">{{ user.username }}</h5>
+                <p class="card-text"><strong>الاسم الأول:</strong> {{ user.first_name }}</p>
+                <p class="card-text"><strong>الاسم الثاني:</strong> {{ user.last_name }}</p>
+                <p class="card-text"><strong>البريد الإلكتروني:</strong> {{ user.email }}</p>
+                <!-- يمكنك إضافة المزيد من المعلومات حسب الحاجة -->
+                <a href="#" class="btn btn-primary">تعديل الملف الشخصي</a>
+            </div>
+        </div>
+    </div>
+{% endblock %}
