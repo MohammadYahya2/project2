@@ -161,50 +161,73 @@
 </div>
 <!-- Categories End -->
 
-
- <!-- Courses Start -->
- <div class="container-xxl py-5">
+<!-- Courses Start -->
+<div class="container-xxl py-5">
     <div class="container">
         <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
             <h6 class="section-title bg-white text-center text-primary px-3">Courses</h6>
             <h1 class="mb-5">Popular Courses</h1>
+    <!-- Search Section Start -->
+<div class="container-xxl py-3">
+    <div class="container">
+        <!-- نموذج البحث -->
+        <form id="searchForm" method="GET" action="{% url 'home' %}" class="d-flex justify-content-center">
+            <input type="text" name="q" id="searchInput" class="form-control form-control-sm me-2 border border-primary" placeholder="Search for a course..." value="{{ request.GET.q }}" style="max-width: 300px;">
+            <button type="submit" class="btn btn-primary btn-sm">Search</button>
+        </form>
+    </div>
+</div>
+<!-- Search Section End -->
+
+
         </div>
-        <div class="row g-4 justify-content-center">
-            {% for course in courses %}
-                <div class="col-lg-4 col-md-6 wow fadeInUp" data-wow-delay="{{ course.delay }}s">
-                    <div class="course-item bg-light">
-                        <div class="position-relative overflow-hidden">
-                            <img class="img-fluid" src="{{ course.image.url }}" alt="{{ course.title }}">
-                            <div class="w-100 d-flex justify-content-center position-absolute bottom-0 start-0 mb-4">
-                                <a href="{% url 'course_detail' course.id %}" class="flex-shrink-0 btn btn-sm btn-primary px-3 border-end" style="border-radius: 30px 0 0 30px; background-color: #515966;">Read More</a>
-                                <a href="" class="flex-shrink-0 btn btn-sm btn-primary px-3" style="border-radius: 0 30px 30px 0; background-color: #515966;">Join Now</a>
-                            </div>
-                        </div>
-                        <div class="text-center p-4 pb-0">
-                            <h3 class="mb-0">${{ course.price }}</h3>
-                            <div class="mb-3">
-                                {% for star in "12345" %}
-                                    <small class="fa fa-star text-primary"></small>
-                                {% endfor %}
-                                <small>({{ course.rating_count }})</small>
-                            </div>
-                            <h5 class="mb-4">{{ course.title }}</h5>
-                        </div>
-                        <div class="d-flex border-top">
-                            <small class="flex-fill text-center border-end py-2"><i class="fa fa-user-tie text-primary me-2"></i>{{ course.instructor.name }}</small>
-                            <small class="flex-fill text-center border-end py-2"><i class="fa fa-clock text-primary me-2"></i>{{ course.duration }} Hrs</small>
-                            <small class="flex-fill text-center py-2"><i class="fa fa-user text-primary me-2"></i>{{ course.students_count }} Students</small>
-                        </div>
-                    </div>
-                </div>
-            {% empty %}
-                <p class="text-center">No courses available at the moment.</p>
-            {% endfor %}
+        
+        <!-- حاوية الدورات التي سيتم تحديثها بواسطة AJAX -->
+        <div id="coursesContainer" class="row g-4 justify-content-center">
+            {% include 'courses/course_list.html' %}
         </div>
+
+        <!-- Pagination Controls Start -->
+        <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-center">
+                {% if courses.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?q={{ query }}&page={{ courses.previous_page_number }}" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link" aria-hidden="true">&laquo;</span>
+                    </li>
+                {% endif %}
+
+                {% for num in courses.paginator.page_range %}
+                    {% if courses.number == num %}
+                        <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                    {% elif num > courses.number|add:'-3' and num < courses.number|add:'3' %}
+                        <li class="page-item"><a class="page-link" href="?q={{ query }}&page={{ num }}">{{ num }}</a></li>
+                    {% endif %}
+                {% endfor %}
+
+                {% if courses.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?q={{ query }}&page={{ courses.next_page_number }}" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link" aria-hidden="true">&raquo;</span>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+        <!-- Pagination Controls End -->
+
     </div>
 </div>
 <!-- Courses End -->
-
     
 <!-- Testimonial Start -->
 <div class="container-xxl py-5 wow fadeInUp" data-wow-delay="0.1s">
@@ -250,6 +273,30 @@
     </div>
 </div>
 <!-- Testimonial End -->
+<!-- إضافة سكريبت jQuery و AJAX -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function(){
+        $('#searchForm').on('submit', function(e){
+            e.preventDefault(); // منع الإرسال الافتراضي للنموذج
+            var query = $('#searchInput').val();
+
+            $.ajax({
+                url: "{% url 'home' %}",
+                data: {
+                    'q': query
+                },
+                dataType: 'json',
+                success: function(data){
+                    $('#coursesContainer').html(data.html);
+                },
+                error: function(xhr, status, error){
+                    console.error('AJAX Error:', status, error);
+                }
+            });
+        });
+    });
+</script>
 
 
 

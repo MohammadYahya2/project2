@@ -66,7 +66,6 @@ class Instructor(models.Model):
 
     def __str__(self):
         return self.name
-
 class Course(models.Model):
     title = models.CharField(max_length=200)
     image = models.ImageField(upload_to='courses/')
@@ -78,16 +77,38 @@ class Course(models.Model):
     students_count = models.IntegerField(default=0)
     delay = models.FloatField(default=0.1)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='courses')
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True)  # إزالة null=True و blank=True
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    video_url = models.URLField(blank=True, null=True, help_text="أدخل رابط الفيديو التعريفي (مثل YouTube أو Vimeo)")
 
     def __str__(self):
         return self.title
 
+class Curriculum(models.Model):
+    course = models.ForeignKey(Course, related_name='curriculums', on_delete=models.CASCADE)
+    title = models.CharField(max_length=200)
 
+    def __str__(self):
+        return self.title
+class Lesson(models.Model):
+    curriculum = models.ForeignKey(Curriculum, related_name='lessons', on_delete=models.CASCADE)
+    title = models.CharField(max_length=200)
+    video_url = models.URLField(blank=True, null=True, help_text="رابط الفيديو (YouTube أو Vimeo)")
+    content = models.TextField()
 
+    def __str__(self):
+        return self.title
+
+# تحديث نموذج Testimonial لربطه بالكورس
 
 class Testimonial(models.Model):
+    course = models.ForeignKey(
+        Course,
+        on_delete=models.CASCADE,
+        related_name='testimonials',
+        null=True,
+        blank=True
+    )
     client_name = models.CharField(max_length=100)
     profession = models.CharField(max_length=100)
     image = models.ImageField(upload_to='testimonials/')
@@ -95,6 +116,7 @@ class Testimonial(models.Model):
 
     def __str__(self):
         return f'Testimonial from {self.client_name}'
+
 
 # إضافة نموذج DesignerConsultation
 class DesignerConsultation(models.Model):

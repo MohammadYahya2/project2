@@ -2,37 +2,37 @@
 
 {% extends 'courses/base.html' %}
 {% load static %}
+{% load embed_video_tags %}  <!-- If using django-embed-video -->
 
-{% block title %}{{ course.title }} - تفاصيل الكورس{% endblock %}
+{% block title %}{{ course.title }} - Course Details{% endblock %}
 
 {% block content %}
 
 <div class="container-xxl py-5">
     <div class="container">
-        <!-- عنوان الكورس -->
+        <!-- Course Title -->
         <div class="row">
             <div class="col-12">
                 <h1 class="mb-4">{{ course.title }}</h1>
             </div>
         </div>
         
-        <!-- صورة الكورس -->
+        <!-- Course Image and Details -->
         <div class="row">
             <div class="col-md-6">
-                <img src="{{ course.image.url }}" class="img-fluid rounded" alt="{{ course.title }}">
+                <img src="{{ course.image.url }}" class="img-fluid rounded shadow" alt="{{ course.title }}">
             </div>
             
-            <!-- تفاصيل الكورس -->
             <div class="col-md-6">
-                <h3 class="mb-3">تفاصيل الكورس</h3>
+                <h3 class="mb-3">Course Details</h3>
                 <p>{{ course.description }}</p>
                 
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item"><strong>السعر:</strong> ${{ course.price }}</li>
-                    <li class="list-group-item"><strong>المدرب:</strong> {{ course.instructor.name }}</li>
-                    <li class="list-group-item"><strong>المدة:</strong> {{ course.duration }} ساعات</li>
-                    <li class="list-group-item"><strong>عدد الطلاب:</strong> {{ course.students_count }}</li>
-                    <li class="list-group-item"><strong>التقييم:</strong> 
+                <ul class="list-group list-group-flush mb-4">
+                    <li class="list-group-item"><strong>Price:</strong> ${{ course.price }}</li>
+                    <li class="list-group-item"><strong>Instructor:</strong> {{ course.instructor.name }}</li>
+                    <li class="list-group-item"><strong>Duration:</strong> {{ course.duration }} hours</li>
+                    <li class="list-group-item"><strong>Number of Students:</strong> {{ course.students_count }}</li>
+                    <li class="list-group-item"><strong>Rating:</strong> 
                         {% for star in "12345" %}
                             {% if forloop.counter <= course.rating_count %}
                                 <i class="fa fa-star text-primary"></i>
@@ -44,65 +44,215 @@
                     </li>
                 </ul>
                 
-                <!-- أزرار التفاعل -->
-                <div class="mt-4">
-                    <a href="#" class="btn btn-primary me-2">الانضمام الآن</a>
-                    <a href="#" class="btn btn-outline-primary">إضافة إلى المفضلة</a>
+                <!-- Action Buttons -->
+                <div class="mt-4 d-flex">
+                    <a href="#" class="btn btn-primary me-2">Join Now</a>
+                    <a href="#" class="btn btn-outline-primary">Add to Favorites</a>
                 </div>
             </div>
         </div>
         
-        <!-- قسم المحتويات -->
-        <div class="row mt-5">
-            <div class="col-12">
-                <h3>محتويات الكورس</h3>
-                <!-- يمكنك إضافة محتويات إضافية هنا مثل الدروس، الملفات، إلخ -->
-                <p>هنا يمكنك إضافة تفاصيل إضافية حول محتويات الكورس، مثل قائمة الدروس، الموارد، وما إلى ذلك.</p>
+        <!-- Introductory Video -->
+        {% if course.video_url %}
+            <div class="row mt-5">
+                <div class="col-12">
+                    <h3>Introductory Video</h3>
+                    <div class="ratio ratio-16x9">
+                        <iframe src="{{ course.video_url }}" title="Introductory Video for {{ course.title }}" allowfullscreen></iframe>
+                    </div>
+                </div>
             </div>
-        </div>
+        {% endif %}
         
-        <!-- قسم التقييمات -->
+        <!-- Curriculum Section with Tabs -->
         <div class="row mt-5">
             <div class="col-12">
-                <h3>تقييمات الطلاب</h3>
-                <!-- نموذج لإضافة تقييم -->
-                <form method="POST" action="">
-                    {% csrf_token %}
-                    <!-- يمكنك إضافة حقول لتقييم الكورس هنا -->
-                    <div class="mb-3">
-                        <label for="rating" class="form-label">تقييمك للكورس</label>
-                        <select class="form-select" id="rating" name="rating">
-                            <option selected>اختر تقييمك</option>
-                            <option value="1">1 - ضعيف</option>
-                            <option value="2">2 - جيد</option>
-                            <option value="3">3 - جيد جدًا</option>
-                            <option value="4">4 - ممتاز</option>
-                            <option value="5">5 - رائع</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label for="review" class="form-label">ملاحظاتك</label>
-                        <textarea class="form-control" id="review" name="review" rows="3" placeholder="اكتب ملاحظاتك هنا..."></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-success">إرسال التقييم</button>
-                </form>
-                
-                <!-- عرض التقييمات -->
-                <div class="mt-4">
-                    {% for testimonial in course.testimonial_set.all %}
-                        <div class="card mb-3">
-                            <div class="card-body">
-                                <h5 class="card-title">{{ testimonial.client_name }}</h5>
-                                <h6 class="card-subtitle mb-2 text-muted">{{ testimonial.profession }}</h6>
-                                <p class="card-text">{{ testimonial.text }}</p>
-                            </div>
+                <h3>Curriculum</h3>
+                <ul class="nav nav-tabs" id="curriculumTab" role="tablist">
+                    {% for curriculum in curriculums %}
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link {% if forloop.first %}active{% endif %}" id="tab{{ forloop.counter }}-tab" data-bs-toggle="tab" data-bs-target="#tab{{ forloop.counter }}" type="button" role="tab" aria-controls="tab{{ forloop.counter }}" aria-selected="{% if forloop.first %}true{% else %}false{% endif %}">{{ curriculum.title }}</button>
+                        </li>
+                    {% endfor %}
+                </ul>
+                <div class="tab-content" id="curriculumTabContent">
+                    {% for curriculum in curriculums %}
+                        <div class="tab-pane fade {% if forloop.first %}show active{% endif %}" id="tab{{ forloop.counter }}" role="tabpanel" aria-labelledby="tab{{ forloop.counter }}-tab">
+                            <ul class="list-group mt-3">
+                                {% for lesson in curriculum.lessons.all %}
+                                    <li class="list-group-item">
+                                        <strong>{{ lesson.title }}</strong>
+                                        {% if lesson.video_url %}
+                                            <div class="ratio ratio-16x9 mt-2">
+                                                <iframe src="{{ lesson.video_url }}" title="{{ lesson.title }}" allowfullscreen></iframe>
+                                            </div>
+                                        {% endif %}
+                                        <p>{{ lesson.content }}</p>
+                                    </li>
+                                {% endfor %}
+                            </ul>
                         </div>
                     {% empty %}
-                        <p>لا توجد تقييمات لهذا الكورس بعد.</p>
+                        <div class="tab-pane fade" id="tab{{ forloop.counter }}" role="tabpanel" aria-labelledby="tab{{ forloop.counter }}-tab">
+                            <p>No curriculum has been added for this course yet.</p>
+                        </div>
                     {% endfor %}
                 </div>
             </div>
         </div>
+        
+        <!-- Course Requirements -->
+        <div class="row mt-5">
+            <div class="col-12">
+                <h3>Course Requirements</h3>
+                <ul class="list-group">
+                    {% for requirement in course.requirements %}
+                        <li class="list-group-item d-flex align-items-center">
+                            <i class="fa fa-check-circle text-success me-2"></i> {{ requirement }}
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Course Objectives -->
+        <div class="row mt-5">
+            <div class="col-12">
+                <h3>What You'll Learn</h3>
+                <ul class="list-group">
+                    {% for objective in course.objectives %}
+                        <li class="list-group-item d-flex align-items-center">
+                            <i class="fa fa-clipboard-check text-primary me-2"></i> {{ objective }}
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Instructor Information -->
+        <div class="row mt-5">
+            <div class="col-12">
+                <h3>About the Instructor</h3>
+                <div class="d-flex align-items-center">
+                    <img src="{{ course.instructor.image.url }}" class="rounded-circle me-3 shadow" alt="{{ course.instructor.name }}" width="100" height="100">
+                    <div>
+                        <h5>{{ course.instructor.name }}</h5>
+                        <p>{{ course.instructor.designation }}</p>
+                        <div>
+                            {% if course.instructor.facebook_url %}
+                                <a href="{{ course.instructor.facebook_url }}" target="_blank" class="me-2 text-decoration-none text-primary"><i class="fab fa-facebook fa-lg"></i></a>
+                            {% endif %}
+                            {% if course.instructor.twitter_url %}
+                                <a href="{{ course.instructor.twitter_url }}" target="_blank" class="me-2 text-decoration-none text-info"><i class="fab fa-twitter fa-lg"></i></a>
+                            {% endif %}
+                            {% if course.instructor.instagram_url %}
+                                <a href="{{ course.instructor.instagram_url }}" target="_blank" class="me-2 text-decoration-none text-danger"><i class="fab fa-instagram fa-lg"></i></a>
+                            {% endif %}
+                            {% if course.instructor.linkedin_url %}
+                                <a href="{{ course.instructor.linkedin_url }}" target="_blank" class="me-2 text-decoration-none text-primary"><i class="fab fa-linkedin fa-lg"></i></a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <p>{{ course.instructor.bio }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Student Testimonials Section -->
+        <div class="row mt-5">
+            <div class="col-12">
+                <h3>Student Testimonials</h3>
+                <!-- Testimonial Submission Form -->
+                <form method="POST" action="{% url 'add_testimonial' course.id %}" enctype="multipart/form-data" class="mb-4">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="rating" class="form-label">Your Rating</label>
+                        <select class="form-select" id="rating" name="rating" required>
+                            <option value="" disabled selected>Select your rating</option>
+                            <option value="1">1 - Poor</option>
+                            <option value="2">2 - Fair</option>
+                            <option value="3">3 - Good</option>
+                            <option value="4">4 - Very Good</option>
+                            <option value="5">5 - Excellent</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="review" class="form-label">Your Review</label>
+                        <textarea class="form-control" id="review" name="review" rows="3" placeholder="Write your review here..." required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="image" class="form-label">Upload an Image (optional)</label>
+                        <input type="file" class="form-control" id="image" name="image">
+                    </div>
+                    <button type="submit" class="btn btn-success">Submit Review</button>
+                </form>
+                
+                <!-- Displaying Testimonials -->
+                <div class="testimonials">
+                    {% for testimonial in testimonials %}
+                        <div class="card mb-3 shadow-sm">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center mb-3">
+                                    {% if testimonial.image %}
+                                        <img src="{{ testimonial.image.url }}" class="rounded-circle me-3" alt="{{ testimonial.client_name }}" width="60" height="60">
+                                    {% else %}
+                                        <img src="{% static 'courses/images/default_avatar.png' %}" class="rounded-circle me-3" alt="{{ testimonial.client_name }}" width="60" height="60">
+                                    {% endif %}
+                                    <div>
+                                        <h5 class="card-title mb-0">{{ testimonial.client_name }}</h5>
+                                        <small class="text-muted">{{ testimonial.profession }}</small>
+                                    </div>
+                                </div>
+                                <p class="card-text">{{ testimonial.text }}</p>
+                                <div class="d-flex align-items-center">
+                                    {% for star in "12345" %}
+                                        {% if forloop.counter <= testimonial.rating %}
+                                            <i class="fa fa-star text-warning"></i>
+                                        {% else %}
+                                            <i class="fa fa-star text-secondary"></i>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <p>No testimonials have been added for this course yet.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Similar Courses Section with Carousel -->
+        <div class="row mt-5">
+            <div class="col-12">
+                <h3>Similar Courses</h3>
+                <div class="owl-carousel similar-courses-carousel">
+                    {% for similar_course in similar_courses %}
+                        <div class="course-item bg-light p-3 rounded shadow-sm">
+                            <img class="img-fluid rounded" src="{{ similar_course.image.url }}" alt="{{ similar_course.title }}">
+                            <div class="mt-3">
+                                <h5>{{ similar_course.title }}</h5>
+                                <p class="text-muted mb-1">${{ similar_course.price }}</p>
+                                <div class="mb-2">
+                                    {% for star in "12345" %}
+                                        {% if forloop.counter <= similar_course.rating_count %}
+                                            <i class="fa fa-star text-warning"></i>
+                                        {% else %}
+                                            <i class="fa fa-star text-secondary"></i>
+                                        {% endif %}
+                                    {% endfor %}
+                                    <small>({{ similar_course.rating_count }})</small>
+                                </div>
+                                <a href="{% url 'course_detail' similar_course.id %}" class="btn btn-primary btn-sm">View Details</a>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        
     </div>
 </div>
 

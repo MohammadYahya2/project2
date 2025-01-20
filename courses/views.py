@@ -6,9 +6,15 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.urls import reverse_lazy
 from .forms import UserRegisterForm, UserLoginForm, CourseForm, DesignerConsultationForm, ContactForm
-from .models import Course, Category, DesignerConsultation, Instructor, Carousel, Service, About, Testimonial, Contact
+from .models import Course, Category, DesignerConsultation, Instructor, Carousel, Service, About, Testimonial, Contact, Curriculum, Lesson
 from django.contrib.auth.views import LoginView, LogoutView
-# 1. الصفحة الرئيسية
+import re
+from .utils import convert_video_url
+from django.db.models import Q  # Import Q for complex queries
+from django.http import JsonResponse
+from django.core.paginator import Paginator
+from django.template.loader import render_to_string
+
 def home(request):
     categories = Category.objects.all()
     carousels = Carousel.objects.all()
@@ -16,12 +22,26 @@ def home(request):
     about = About.objects.first()
     instructors = Instructor.objects.all()
     testimonials = Testimonial.objects.all()
-    
-    # جلب الكورسات
-    courses = Course.objects.all()
 
-    # افترض أن لديك متغير gallery_images
-    gallery_images = []  # قم بتعريفه أو جلبه حسب الحاجة
+    # التعامل مع استعلام البحث
+    query = request.GET.get('q', '')
+    if query:
+        courses = Course.objects.filter(
+            Q(title__icontains=query) |
+            Q(description__icontains=query) |
+            Q(instructor__name__icontains=query)
+        ).distinct()
+    else:
+        courses = Course.objects.all()
+
+    # تطبيق pagination
+    paginator = Paginator(courses, 6)  # عرض 6 دورات في الصفحة
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        html = render_to_string('courses/course_list.html', {'courses': page_obj}, request=request)
+        return JsonResponse({'html': html})
 
     context = {
         'categories': categories,
@@ -30,11 +50,10 @@ def home(request):
         'about': about,
         'instructors': instructors,
         'testimonials': testimonials,
-        'gallery_images': gallery_images,
-        'courses': courses,  # إضافة الكورسات إلى السياق
+        'courses': page_obj,
+        'query': query,
     }
     return render(request, 'courses/home.html', context)
-
 # 2. صفحة تسجيل المستخدم
 def register(request):
     if request.method == 'POST':
@@ -87,11 +106,44 @@ def add_course(request):
         form = CourseForm()
     return render(request, 'courses/add_course.html', {'form': form})
 
-# 6. تفاصيل الكورس
 def course_detail(request, pk):
-    course = get_object_or_404(Course, pk=pk)
-    return render(request, 'courses/course_detail.html', {'course': course})
+    course = get_object_or_404(Course, id=pk)
+    testimonials = course.testimonials.all()
+    similar_courses = Course.objects.filter(category=course.category).exclude(id=pk)[:4]
 
+    # Convert standard video URL to embed URL if necessary
+    if course.video_url:
+        course.video_url = convert_video_url(course.video_url)
+
+    context = {
+        'course': course,
+        'testimonials': testimonials,
+        'similar_courses': similar_courses,
+        'curriculums': course.curriculums.all(),
+    }
+    return render(request, 'courses/course_detail.html', context)
+@login_required
+def add_testimonial(request, course_id):
+    course = get_object_or_404(Course, id=course_id)
+    if request.method == 'POST':
+        rating = request.POST.get('rating')
+        review = request.POST.get('review')
+        if rating and review:
+            Testimonial.objects.create(
+                course=course,
+                client_name=request.user.username,
+                profession="Student",  # Modify as needed
+                text=review
+            )
+            # Update rating_count and students_count
+            course.rating_count = (course.rating_count * course.students_count + int(rating)) / (course.students_count + 1)
+            course.students_count += 1
+            course.save()
+            messages.success(request, 'Your testimonial has been added successfully.')
+            return redirect('course_detail', pk=course.id)
+        else:
+            messages.error(request, 'Please fill in all fields.')
+    return redirect('course_detail', pk=course.id)
 
 # 7. طلب استشارة
 @login_required
@@ -163,3 +215,24 @@ def contact(request):
 @login_required
 def profile(request):
     return render(request, 'courses/profile.html')
+def convert_youtube_url(url):
+    """
+    Converts a standard YouTube URL to an embed URL.
+    """
+    youtube_regex = r'(https?://)?(www\.)?(youtube\.com|youtu\.?be)/.+$'
+    match = re.match(youtube_regex, url)
+    if match:
+        video_id = None
+        # Extract video ID based on URL format
+        if 'youtube.com' in url:
+            video_id_match = re.search(r'v=([^&]+)', url)
+            if video_id_match:
+                video_id = video_id_match.group(1)
+        elif 'youtu.be' in url:
+            video_id_match = re.search(r'youtu\.be/([^?]+)', url)
+            if video_id_match:
+                video_id = video_id_match.group(1)
+        
+        if video_id:
+            return f'https://www.youtube.com/embed/{video_id}'
+    return url

@@ -4,7 +4,7 @@ from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from .models import Course, DesignerConsultation
-from .models import Contact
+from .models import Course, DesignerConsultation, Contact, Curriculum, Lesson
 
 class UserRegisterForm(UserCreationForm):
     """
@@ -72,13 +72,9 @@ class UserLoginForm(AuthenticationForm):
 
 
 class CourseForm(forms.ModelForm):
-    """
-    نموذج إضافة أو تعديل كورس جديد.
-    يشمل العنوان، الوصف، الفئة، الصورة، والسعر.
-    """
     class Meta:
         model = Course
-        fields = ['title', 'description', 'category', 'image', 'price']
+        fields = ['title', 'description', 'category', 'image', 'price', 'video_url']
         widgets = {
             'title': forms.TextInput(attrs={
                 'class': 'form-control',
@@ -98,6 +94,10 @@ class CourseForm(forms.ModelForm):
             'price': forms.NumberInput(attrs={
                 'class': 'form-control',
                 'placeholder': 'السعر'
+            }),
+            'video_url': forms.URLInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'رابط الفيديو التعريفي (YouTube، Vimeo)'
             }),
         }
 
@@ -138,4 +138,34 @@ class ContactForm(forms.ModelForm):
             'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'بريدك الإلكتروني'}),
             'subject': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'الموضوع'}),
             'message': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'رسالتك'}),
+        }
+class CurriculumForm(forms.ModelForm):
+    class Meta:
+        model = Curriculum
+        fields = ['title']
+        widgets = {
+            'title': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'عنوان المنهج الدراسي'
+            }),
+        }
+
+class LessonForm(forms.ModelForm):
+    class Meta:
+        model = Lesson
+        fields = ['title', 'video_url', 'content']
+        widgets = {
+            'title': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'عنوان الدرس'
+            }),
+            'video_url': forms.URLInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'رابط الفيديو (YouTube، Vimeo)'
+            }),
+            'content': forms.Textarea(attrs={
+                'class': 'form-control',
+                'placeholder': 'محتوى الدرس',
+                'rows': 5
+            }),
         }

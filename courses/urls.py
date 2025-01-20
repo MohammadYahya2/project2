@@ -20,6 +20,7 @@ urlpatterns = [
     path('contact/', views.contact, name='contact'),  # نمط URL لصفحة "اتصل بنا"
     path('profile/', views.profile, name='profile'),  # إضافة هذا السطر
     path('course/<int:pk>/', views.course_detail, name='course_detail'),
+    path('course/<int:course_id>/add-testimonial/', views.add_testimonial, name='add_testimonial'),
 
 
     # يمكنك إضافة أنماط URL الأخرى مثل 'error' إذا كنت تنوي التعامل مع عرض مخصص
