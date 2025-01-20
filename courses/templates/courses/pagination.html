@@ -1,0 +1,37 @@
+<!-- courses/templates/courses/pagination.html -->
+
+<nav aria-label="Page navigation example">
+    <ul class="pagination justify-content-center">
+        {% if courses.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?q={{ query }}&page={{ courses.previous_page_number }}" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+        {% else %}
+            <li class="page-item disabled">
+                <span class="page-link" aria-hidden="true">&laquo;</span>
+            </li>
+        {% endif %}
+
+        {% for num in courses.paginator.page_range %}
+            {% if courses.number == num %}
+                <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+            {% elif num > courses.number|add:'-3' and num < courses.number|add:'3' %}
+                <li class="page-item"><a class="page-link" href="?q={{ query }}&page={{ num }}">{{ num }}</a></li>
+            {% endif %}
+        {% endfor %}
+
+        {% if courses.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?q={{ query }}&page={{ courses.next_page_number }}" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+        {% else %}
+            <li class="page-item disabled">
+                <span class="page-link" aria-hidden="true">&raquo;</span>
+            </li>
+        {% endif %}
+    </ul>
+</nav>

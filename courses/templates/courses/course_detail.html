@@ -2,7 +2,6 @@
 
 {% extends 'courses/base.html' %}
 {% load static %}
-{% load embed_video_tags %}  <!-- If using django-embed-video -->
 
 {% block title %}{{ course.title }} - Course Details{% endblock %}
 
@@ -10,14 +9,14 @@
 
 <div class="container-xxl py-5">
     <div class="container">
-        <!-- Course Title -->
+        <!-- عنوان الدورة -->
         <div class="row">
             <div class="col-12">
                 <h1 class="mb-4">{{ course.title }}</h1>
             </div>
         </div>
         
-        <!-- Course Image and Details -->
+        <!-- صورة الدورة وتفاصيلها -->
         <div class="row">
             <div class="col-md-6">
                 <img src="{{ course.image.url }}" class="img-fluid rounded shadow" alt="{{ course.title }}">
@@ -32,19 +31,21 @@
                     <li class="list-group-item"><strong>Instructor:</strong> {{ course.instructor.name }}</li>
                     <li class="list-group-item"><strong>Duration:</strong> {{ course.duration }} hours</li>
                     <li class="list-group-item"><strong>Number of Students:</strong> {{ course.students_count }}</li>
-                    <li class="list-group-item"><strong>Rating:</strong> 
-                        {% for star in "12345" %}
-                            {% if forloop.counter <= course.rating_count %}
-                                <i class="fa fa-star text-primary"></i>
-                            {% else %}
-                                <i class="fa fa-star text-secondary"></i>
-                            {% endif %}
-                        {% endfor %}
-                        ({{ course.rating_count }})
+                    <li class="list-group-item">
+                        <strong>Average Rating:</strong> {{ average_rating }}/5
+                        <div class="d-inline-block ms-2">
+                            {% for star in "12345" %}
+                                {% if forloop.counter <= average_rating|floatformat:"0" %}
+                                    <i class="fa fa-star text-warning"></i>
+                                {% else %}
+                                    <i class="fa fa-star text-secondary"></i>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
                     </li>
                 </ul>
                 
-                <!-- Action Buttons -->
+                <!-- أزرار الإجراء -->
                 <div class="mt-4 d-flex">
                     <a href="#" class="btn btn-primary me-2">Join Now</a>
                     <a href="#" class="btn btn-outline-primary">Add to Favorites</a>
@@ -52,7 +53,7 @@
             </div>
         </div>
         
-        <!-- Introductory Video -->
+        <!-- فيديو تمهيدي -->
         {% if course.video_url %}
             <div class="row mt-5">
                 <div class="col-12">
@@ -64,14 +65,16 @@
             </div>
         {% endif %}
         
-        <!-- Curriculum Section with Tabs -->
+        <!-- المنهج الدراسي مع التبويبات -->
         <div class="row mt-5">
             <div class="col-12">
                 <h3>Curriculum</h3>
                 <ul class="nav nav-tabs" id="curriculumTab" role="tablist">
                     {% for curriculum in curriculums %}
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link {% if forloop.first %}active{% endif %}" id="tab{{ forloop.counter }}-tab" data-bs-toggle="tab" data-bs-target="#tab{{ forloop.counter }}" type="button" role="tab" aria-controls="tab{{ forloop.counter }}" aria-selected="{% if forloop.first %}true{% else %}false{% endif %}">{{ curriculum.title }}</button>
+                            <button class="nav-link {% if forloop.first %}active{% endif %}" id="tab{{ forloop.counter }}-tab" data-bs-toggle="tab" data-bs-target="#tab{{ forloop.counter }}" type="button" role="tab" aria-controls="tab{{ forloop.counter }}" aria-selected="{% if forloop.first %}true{% else %}false{% endif %}">
+                                {{ curriculum.title }}
+                            </button>
                         </li>
                     {% endfor %}
                 </ul>
@@ -90,6 +93,9 @@
                                         <p>{{ lesson.content }}</p>
                                     </li>
                                 {% endfor %}
+                                {% if curriculum.lessons.all|length == 0 %}
+                                    <li class="list-group-item">No lessons available in this curriculum.</li>
+                                {% endif %}
                             </ul>
                         </div>
                     {% empty %}
@@ -101,40 +107,48 @@
             </div>
         </div>
         
-        <!-- Course Requirements -->
+        <!-- متطلبات الدورة -->
         <div class="row mt-5">
             <div class="col-12">
                 <h3>Course Requirements</h3>
                 <ul class="list-group">
-                    {% for requirement in course.requirements %}
+                    {% for requirement in requirements_list %}
                         <li class="list-group-item d-flex align-items-center">
                             <i class="fa fa-check-circle text-success me-2"></i> {{ requirement }}
                         </li>
+                    {% empty %}
+                        <li class="list-group-item">No requirements specified.</li>
                     {% endfor %}
                 </ul>
             </div>
         </div>
         
-        <!-- Course Objectives -->
+        <!-- ما ستتعلمه -->
         <div class="row mt-5">
             <div class="col-12">
                 <h3>What You'll Learn</h3>
                 <ul class="list-group">
-                    {% for objective in course.objectives %}
+                    {% for objective in objectives_list %}
                         <li class="list-group-item d-flex align-items-center">
                             <i class="fa fa-clipboard-check text-primary me-2"></i> {{ objective }}
                         </li>
+                    {% empty %}
+                        <li class="list-group-item">No objectives specified.</li>
                     {% endfor %}
                 </ul>
             </div>
         </div>
         
-        <!-- Instructor Information -->
+        <!-- معلومات المدرب -->
         <div class="row mt-5">
             <div class="col-12">
                 <h3>About the Instructor</h3>
                 <div class="d-flex align-items-center">
-                    <img src="{{ course.instructor.image.url }}" class="rounded-circle me-3 shadow" alt="{{ course.instructor.name }}" width="100" height="100">
+                    {% if course.instructor.image %}
+                        <img src="{{ course.instructor.image.url }}" class="rounded-circle me-3 shadow" alt="{{ course.instructor.name }}" width="100" height="100">
+                    {% else %}
+                        <img src="{% static 'courses/images/default_avatar.jpg' %}" class="rounded-circle me-3 shadow" alt="{{ course.instructor.name }}" width="100" height="100">
+                    {% endif %}
                     <div>
                         <h5>{{ course.instructor.name }}</h5>
                         <p>{{ course.instructor.designation }}</p>
@@ -154,77 +168,104 @@
                         </div>
                     </div>
                 </div>
-                <div class="mt-3">
-                    <p>{{ course.instructor.bio }}</p>
-                </div>
+                {% if course.instructor.bio %}
+                    <div class="mt-3">
+                        <p>{{ course.instructor.bio }}</p>
+                    </div>
+                {% endif %}
             </div>
         </div>
         
-        <!-- Student Testimonials Section -->
+        <!-- قسم الشهادات -->
         <div class="row mt-5">
             <div class="col-12">
                 <h3>Student Testimonials</h3>
-                <!-- Testimonial Submission Form -->
-                <form method="POST" action="{% url 'add_testimonial' course.id %}" enctype="multipart/form-data" class="mb-4">
+                
+                <!-- نموذج إضافة شهادة -->
+                <form method="POST" enctype="multipart/form-data" class="mb-4">
                     {% csrf_token %}
                     <div class="mb-3">
-                        <label for="rating" class="form-label">Your Rating</label>
-                        <select class="form-select" id="rating" name="rating" required>
-                            <option value="" disabled selected>Select your rating</option>
-                            <option value="1">1 - Poor</option>
-                            <option value="2">2 - Fair</option>
-                            <option value="3">3 - Good</option>
-                            <option value="4">4 - Very Good</option>
-                            <option value="5">5 - Excellent</option>
-                        </select>
+                        <label for="{{ testimonial_form.client_name.id_for_label }}" class="form-label">Your Name</label>
+                        {{ testimonial_form.client_name }}
+                        {% for error in testimonial_form.client_name.errors %}
+                            <div class="text-danger">{{ error }}</div>
+                        {% endfor %}
                     </div>
                     <div class="mb-3">
-                        <label for="review" class="form-label">Your Review</label>
-                        <textarea class="form-control" id="review" name="review" rows="3" placeholder="Write your review here..." required></textarea>
+                        <label for="{{ testimonial_form.profession.id_for_label }}" class="form-label">Your Profession</label>
+                        {{ testimonial_form.profession }}
+                        {% for error in testimonial_form.profession.errors %}
+                            <div class="text-danger">{{ error }}</div>
+                        {% endfor %}
                     </div>
                     <div class="mb-3">
-                        <label for="image" class="form-label">Upload an Image (optional)</label>
-                        <input type="file" class="form-control" id="image" name="image">
+                        <label for="{{ testimonial_form.text.id_for_label }}" class="form-label">Your Review</label>
+                        {{ testimonial_form.text }}
+                        {% for error in testimonial_form.text.errors %}
+                            <div class="text-danger">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    <div class="mb-3">
+                        <label for="{{ testimonial_form.rating.id_for_label }}" class="form-label">Your Rating</label>
+                        {{ testimonial_form.rating }}
+                        {% for error in testimonial_form.rating.errors %}
+                            <div class="text-danger">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    <div class="mb-3">
+                        <label for="{{ testimonial_form.image.id_for_label }}" class="form-label">Upload an Image (optional)</label>
+                        {{ testimonial_form.image }}
+                        {% for error in testimonial_form.image.errors %}
+                            <div class="text-danger">{{ error }}</div>
+                        {% endfor %}
                     </div>
                     <button type="submit" class="btn btn-success">Submit Review</button>
                 </form>
                 
-                <!-- Displaying Testimonials -->
+                <!-- عرض الشهادات -->
                 <div class="testimonials">
-                    {% for testimonial in testimonials %}
-                        <div class="card mb-3 shadow-sm">
-                            <div class="card-body">
-                                <div class="d-flex align-items-center mb-3">
-                                    {% if testimonial.image %}
-                                        <img src="{{ testimonial.image.url }}" class="rounded-circle me-3" alt="{{ testimonial.client_name }}" width="60" height="60">
-                                    {% else %}
-                                        <img src="{% static 'courses/images/default_avatar.png' %}" class="rounded-circle me-3" alt="{{ testimonial.client_name }}" width="60" height="60">
-                                    {% endif %}
-                                    <div>
-                                        <h5 class="card-title mb-0">{{ testimonial.client_name }}</h5>
-                                        <small class="text-muted">{{ testimonial.profession }}</small>
+                    <div class="row">
+                        {% for testimonial in testimonials %}
+                            <div class="col-md-4 col-sm-6 mb-4">
+                                <div class="card h-100 shadow-sm">
+                                    <div class="card-body">
+                                        <div class="d-flex align-items-center mb-3">
+                                            {% if testimonial.image %}
+                                                <img src="{{ testimonial.image.url }}" class="rounded-circle me-3" alt="{{ testimonial.client_name }}" width="60" height="60">
+                                            {% else %}
+                                            <img src="{% static '/img/default_avatar.jpg' %}" class="rounded-circle me-3" alt="{{ testimonial.client_name }}" width="60" height="60">
+                                            {% endif %}
+                                            <div>
+                                                <h5 class="card-title mb-0">{{ testimonial.client_name }}</h5>
+                                                <small class="text-muted">{{ testimonial.profession }}</small>
+                                            </div>
+                                        </div>
+                                        <p class="card-text">{{ testimonial.text }}</p>
+                                        <div class="d-flex align-items-center">
+                                            {% for star in "12345" %}
+                                                {% if forloop.counter <= testimonial.rating %}
+                                                    <i class="fa fa-star text-warning"></i>
+                                                {% else %}
+                                                    <i class="fa fa-star text-secondary"></i>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </div>
                                     </div>
                                 </div>
-                                <p class="card-text">{{ testimonial.text }}</p>
-                                <div class="d-flex align-items-center">
-                                    {% for star in "12345" %}
-                                        {% if forloop.counter <= testimonial.rating %}
-                                            <i class="fa fa-star text-warning"></i>
-                                        {% else %}
-                                            <i class="fa fa-star text-secondary"></i>
-                                        {% endif %}
-                                    {% endfor %}
-                                </div>
                             </div>
-                        </div>
-                    {% empty %}
-                        <p>No testimonials have been added for this course yet.</p>
-                    {% endfor %}
+                        {% empty %}
+                            <div class="col-12">
+                                <p>No testimonials have been added for this course yet.</p>
+                            </div>
+                        {% endfor %}
+                    </div>
                 </div>
             </div>
         </div>
+
         
-        <!-- Similar Courses Section with Carousel -->
+        
+        <!-- قسم الدورات المماثلة -->
         <div class="row mt-5">
             <div class="col-12">
                 <h3>Similar Courses</h3>
@@ -237,7 +278,7 @@
                                 <p class="text-muted mb-1">${{ similar_course.price }}</p>
                                 <div class="mb-2">
                                     {% for star in "12345" %}
-                                        {% if forloop.counter <= similar_course.rating_count %}
+                                        {% if forloop.counter <= similar_course.rating_count|floatformat:"0" %}
                                             <i class="fa fa-star text-warning"></i>
                                         {% else %}
                                             <i class="fa fa-star text-secondary"></i>
@@ -253,7 +294,23 @@
             </div>
         </div>
         
-    </div>
-</div>
+    </div> <!-- نهاية container -->
+</div> <!-- نهاية container-xxl -->
+
+<!-- تهيئة Owl Carousel إذا كنت تستخدمه -->
+<script>
+    $(document).ready(function(){
+        $(".similar-courses-carousel").owlCarousel({
+            loop:true,
+            margin:10,
+            nav:true,
+            responsive:{
+                0:{ items:1 },
+                600:{ items:2 },
+                1000:{ items:4 }
+            }
+        });
+    });
+</script>
 
 {% endblock %}

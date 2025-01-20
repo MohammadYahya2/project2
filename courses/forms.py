@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from .models import Course, DesignerConsultation
 from .models import Course, DesignerConsultation, Contact, Curriculum, Lesson
+from .models import Course, Testimonial
 
 class UserRegisterForm(UserCreationForm):
     """
@@ -70,37 +71,32 @@ class UserLoginForm(AuthenticationForm):
         model = User
         fields = ['username', 'password']
 
-
 class CourseForm(forms.ModelForm):
     class Meta:
         model = Course
-        fields = ['title', 'description', 'category', 'image', 'price', 'video_url']
+        fields = [
+            'title', 'description', 'price', 'instructor', 'duration',
+            'students_count', 'rating_count', 'image', 'video_url',
+            'requirements', 'objectives', 'what_you_learn',
+            'course_includes', 'related_topics', 'category'
+        ]
         widgets = {
-            'title': forms.TextInput(attrs={
-                'class': 'form-control',
-                'placeholder': 'عنوان الكورس'
-            }),
-            'description': forms.Textarea(attrs={
-                'class': 'form-control',
-                'placeholder': 'وصف الكورس',
-                'rows': 5
-            }),
-            'category': forms.Select(attrs={
-                'class': 'form-control'
-            }),
-            'image': forms.ClearableFileInput(attrs={
-                'class': 'form-control'
-            }),
-            'price': forms.NumberInput(attrs={
-                'class': 'form-control',
-                'placeholder': 'السعر'
-            }),
-            'video_url': forms.URLInput(attrs={
-                'class': 'form-control',
-                'placeholder': 'رابط الفيديو التعريفي (YouTube، Vimeo)'
-            }),
+            'title': forms.TextInput(attrs={'class': 'form-control'}),
+            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 4}),
+            'price': forms.NumberInput(attrs={'class': 'form-control'}),
+            'instructor': forms.Select(attrs={'class': 'form-select'}),
+            'duration': forms.NumberInput(attrs={'class': 'form-control'}),
+            'students_count': forms.NumberInput(attrs={'class': 'form-control', 'readonly': 'readonly'}),
+            'rating_count': forms.NumberInput(attrs={'class': 'form-control', 'readonly': 'readonly'}),
+            'image': forms.ClearableFileInput(attrs={'class': 'form-control'}),
+            'video_url': forms.URLInput(attrs={'class': 'form-control'}),
+            'requirements': forms.TextInput(attrs={'class': 'form-control'}),
+            'objectives': forms.TextInput(attrs={'class': 'form-control'}),
+            'what_you_learn': forms.TextInput(attrs={'class': 'form-control'}),
+            'course_includes': forms.TextInput(attrs={'class': 'form-control'}),
+            'related_topics': forms.TextInput(attrs={'class': 'form-control'}),
+            'category': forms.Select(attrs={'class': 'form-select'}),
         }
-
 
 class DesignerConsultationForm(forms.ModelForm):
     """
@@ -168,4 +164,29 @@ class LessonForm(forms.ModelForm):
                 'placeholder': 'محتوى الدرس',
                 'rows': 5
             }),
+        }
+class TestimonialForm(forms.ModelForm):
+    RATING_CHOICES = [
+        (1, '1 - Very Poor'),
+        (2, '2 - Poor'),
+        (3, '3 - Average'),
+        (4, '4 - Good'),
+        (5, '5 - Excellent'),
+    ]
+
+    rating = forms.ChoiceField(
+        choices=RATING_CHOICES,
+        widget=forms.Select(attrs={'class': 'form-select'}),
+        label='Rating',
+        help_text='Select a rating between 1 and 5.'
+    )
+
+    class Meta:
+        model = Testimonial
+        fields = ['client_name', 'profession', 'text', 'rating', 'image']
+        widgets = {
+            'client_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Your Name'}),
+            'profession': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Your Profession'}),
+            'text': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Write your review here...', 'rows': 3}),
+            'image': forms.ClearableFileInput(attrs={'class': 'form-control'}),
         }

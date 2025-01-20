@@ -14,6 +14,9 @@ from django.db.models import Q  # Import Q for complex queries
 from django.http import JsonResponse
 from django.core.paginator import Paginator
 from django.template.loader import render_to_string
+from .forms import TestimonialForm
+from .models import Course, Testimonial
+from django.db.models import Avg
 
 def home(request):
     categories = Category.objects.all()
@@ -110,16 +113,42 @@ def course_detail(request, pk):
     course = get_object_or_404(Course, id=pk)
     testimonials = course.testimonials.all()
     similar_courses = Course.objects.filter(category=course.category).exclude(id=pk)[:4]
+    curriculums = course.curriculums.all()
 
-    # Convert standard video URL to embed URL if necessary
+    # تحويل رابط الفيديو إذا لزم الأمر
     if course.video_url:
         course.video_url = convert_video_url(course.video_url)
+
+    # تحويل الحقول المفصولة بفواصل إلى قوائم
+    requirements_list = [req.strip() for req in course.requirements.split(',')] if course.requirements else []
+    objectives_list = [obj.strip() for obj in course.objectives.split(',')] if course.objectives else []
+
+    if request.method == 'POST':
+        testimonial_form = TestimonialForm(request.POST, request.FILES)
+        if testimonial_form.is_valid():
+            new_testimonial = testimonial_form.save(commit=False)
+            new_testimonial.course = course
+            new_testimonial.save()
+            messages.success(request, "Your testimonial has been submitted successfully!")
+            return redirect('course_detail', pk=course.id)
+        else:
+            messages.error(request, "There was an error submitting your testimonial. Please check the form and try again.")
+    else:
+        testimonial_form = TestimonialForm()
+
+    # حساب متوسط التقييمات
+    average_rating = testimonials.aggregate(Avg('rating'))['rating__avg']
+    average_rating = round(average_rating, 1) if average_rating else 0
 
     context = {
         'course': course,
         'testimonials': testimonials,
         'similar_courses': similar_courses,
-        'curriculums': course.curriculums.all(),
+        'curriculums': curriculums,
+        'testimonial_form': testimonial_form,
+        'average_rating': average_rating,
+        'requirements_list': requirements_list,
+        'objectives_list': objectives_list,
     }
     return render(request, 'courses/course_detail.html', context)
 @login_required
@@ -236,3 +265,19 @@ def convert_youtube_url(url):
         if video_id:
             return f'https://www.youtube.com/embed/{video_id}'
     return url
+
+def convert_video_url(video_url):
+    """
+    Converts a standard video URL (e.g., YouTube) to an embeddable URL.
+    """
+    if 'youtube.com/watch?v=' in video_url:
+        video_id = video_url.split('v=')[1]
+        return f'https://www.youtube.com/embed/{video_id}'
+    elif 'youtu.be/' in video_url:
+        video_id = video_url.split('/')[-1]
+        return f'https://www.youtube.com/embed/{video_id}'
+    elif 'vimeo.com/' in video_url:
+        video_id = video_url.split('/')[-1]
+        return f'https://player.vimeo.com/video/{video_id}'
+    # Add more platforms as needed
+    return video_url  # Return original if no conversion is needed

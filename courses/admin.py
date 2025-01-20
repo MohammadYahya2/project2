@@ -6,12 +6,12 @@ from .models import (
     Instructor, Testimonial, DesignerConsultation, Contact,
     Curriculum, Lesson
 )
-
 @admin.register(Course)
 class CourseAdmin(admin.ModelAdmin):
-    list_display = ('title', 'price', 'rating_count', 'instructor', 'duration', 'students_count', 'delay', 'category', 'created_at', 'created_by', 'video_url')
-    search_fields = ('title', 'instructor__name', 'category__name', 'created_by__username')
-    list_filter = ('instructor', 'category', 'created_at', 'created_by')
+    list_display = ('title', 'instructor', 'price', 'duration', 'students_count', 'rating_count', 'category')
+    list_filter = ('instructor', 'category')
+    search_fields = ('title', 'description', 'instructor__name', 'category__name')
+
 
 @admin.register(Curriculum)
 class CurriculumAdmin(admin.ModelAdmin):
@@ -43,9 +43,9 @@ class AboutAdmin(admin.ModelAdmin):
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ('name',)
+    list_display = ('name', 'description')
     search_fields = ('name',)
-
+    
 @admin.register(SubCategory)
 class SubCategoryAdmin(admin.ModelAdmin):
     list_display = ('name', 'category', 'course_count', 'column_lg', 'column_md', 'delay')
@@ -73,3 +73,5 @@ class ContactAdmin(admin.ModelAdmin):
     list_display = ('name', 'email', 'subject', 'submitted_at')
     search_fields = ('name', 'email', 'subject', 'message')
     list_filter = ('submitted_at',)
+
+

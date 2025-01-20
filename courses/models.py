@@ -2,6 +2,7 @@
 
 from django.db import models
 from django.contrib.auth.models import User
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 class Carousel(models.Model):
     subtitle = models.CharField(max_length=100)
@@ -35,10 +36,13 @@ class About(models.Model):
         return "About Us"
 
 class Category(models.Model):
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, unique=True)
+    description = models.TextField(blank=True, null=True)
+    image = models.ImageField(upload_to='categories/', blank=True, null=True)
 
     def __str__(self):
         return self.name
+
 
 class SubCategory(models.Model):
     name = models.CharField(max_length=100)
@@ -62,28 +66,55 @@ class Instructor(models.Model):
     facebook_url = models.URLField(blank=True, null=True)
     twitter_url = models.URLField(blank=True, null=True)
     instagram_url = models.URLField(blank=True, null=True)
-    delay = models.FloatField(null=True, blank=True)  # جعل الحقل اختياريًا
+    delay = models.FloatField(null=True, blank=True)  # Made optional
 
     def __str__(self):
         return self.name
 class Course(models.Model):
     title = models.CharField(max_length=200)
-    image = models.ImageField(upload_to='courses/')
-    price = models.DecimalField(max_digits=8, decimal_places=2)
-    rating_count = models.IntegerField(default=0)
     description = models.TextField()
+    price = models.DecimalField(max_digits=6, decimal_places=2)
     instructor = models.ForeignKey(Instructor, on_delete=models.CASCADE)
-    duration = models.FloatField()
+    duration = models.IntegerField(help_text="Duration in hours")
     students_count = models.IntegerField(default=0)
-    delay = models.FloatField(default=0.1)
-    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='courses')
-    created_at = models.DateTimeField(auto_now_add=True)  # إزالة null=True و blank=True
-    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
-    video_url = models.URLField(blank=True, null=True, help_text="أدخل رابط الفيديو التعريفي (مثل YouTube أو Vimeo)")
+    rating_count = models.IntegerField(default=0)
+    image = models.ImageField(upload_to='courses/')
+    video_url = models.URLField(blank=True, null=True)
+    requirements = models.TextField(
+        help_text="Comma-separated requirements",
+        null=True,  # Allows NULL in the database
+        blank=True  # Allows the field to be optional in forms
+    )
+    objectives = models.TextField(
+        help_text="Comma-separated objectives",
+        null=True,
+        blank=True
+    )
+    what_you_learn = models.TextField(
+        help_text="Comma-separated learning objectives",
+        blank=True,
+        null=True
+    )
+    course_includes = models.TextField(
+        help_text="Comma-separated course features",
+        blank=True,
+        null=True
+    )
+    related_topics = models.TextField(
+        help_text="Comma-separated related topics",
+        blank=True,
+        null=True
+    )
+    category = models.ForeignKey(
+        Category,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='courses'
+    )
 
     def __str__(self):
         return self.title
-
 class Curriculum(models.Model):
     course = models.ForeignKey(Course, related_name='curriculums', on_delete=models.CASCADE)
     title = models.CharField(max_length=200)
@@ -111,12 +142,16 @@ class Testimonial(models.Model):
     )
     client_name = models.CharField(max_length=100)
     profession = models.CharField(max_length=100)
-    image = models.ImageField(upload_to='testimonials/')
+    image = models.ImageField(upload_to='testimonials/', blank=True, null=True)
     text = models.TextField()
+    rating = models.IntegerField(
+        validators=[MinValueValidator(1), MaxValueValidator(5)],
+        default=5,
+        help_text="Rating must be between 1 and 5"
+    )
 
     def __str__(self):
         return f'Testimonial from {self.client_name}'
-
 
 # إضافة نموذج DesignerConsultation
 class DesignerConsultation(models.Model):

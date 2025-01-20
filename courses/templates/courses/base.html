@@ -225,5 +225,65 @@
    <script>
     new WOW().init();
 </script>
+
+<script>
+    $(document).ready(function(){
+        // Handle pagination clicks
+        $('body').on('click', '.pagination a', function(e){
+            e.preventDefault();
+            var url = $(this).attr('href');
+            if(url){
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    dataType: 'json',
+                    beforeSend: function(){
+                        // Optional: Show a loader or spinner
+                        $('#coursesContainer').html('<div class="text-center my-5"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></div>');
+                    },
+                    success: function(data){
+                        $('#coursesContainer').html(data.courses_html);
+                        $('.pagination').html(data.pagination_html);
+                        // Scroll to top of courses section
+                        $('html, body').animate({
+                            scrollTop: $('#coursesContainer').offset().top - 100
+                        }, 500);
+                    },
+                    error: function(xhr, status, error){
+                        console.error('AJAX Error:', status, error);
+                    }
+                });
+            }
+        });
+
+        // Handle search form submission
+        $('#searchForm').on('submit', function(e){
+            e.preventDefault();
+            var url = $(this).attr('action');
+            var query = $('#searchInput').val();
+            $.ajax({
+                url: url,
+                type: 'GET',
+                data: {'q': query},
+                dataType: 'json',
+                beforeSend: function(){
+                    // Optional: Show a loader or spinner
+                    $('#coursesContainer').html('<div class="text-center my-5"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></div>');
+                },
+                success: function(data){
+                    $('#coursesContainer').html(data.courses_html);
+                    $('.pagination').html(data.pagination_html);
+                    // Scroll to top of courses section
+                    $('html, body').animate({
+                        scrollTop: $('#coursesContainer').offset().top - 100
+                    }, 500);
+                },
+                error: function(xhr, status, error){
+                    console.error('AJAX Error:', status, error);
+                }
+            });
+        });
+    });
+</script>
 </body>
 </html>

@@ -167,21 +167,20 @@
         <div class="text-center wow fadeInUp" data-wow-delay="0.1s">
             <h6 class="section-title bg-white text-center text-primary px-3">Courses</h6>
             <h1 class="mb-5">Popular Courses</h1>
-    <!-- Search Section Start -->
-<div class="container-xxl py-3">
-    <div class="container">
-        <!-- نموذج البحث -->
-        <form id="searchForm" method="GET" action="{% url 'home' %}" class="d-flex justify-content-center">
-            <input type="text" name="q" id="searchInput" class="form-control form-control-sm me-2 border border-primary" placeholder="Search for a course..." value="{{ request.GET.q }}" style="max-width: 300px;">
-            <button type="submit" class="btn btn-primary btn-sm">Search</button>
-        </form>
-    </div>
-</div>
-<!-- Search Section End -->
-
-
         </div>
-        
+
+        <!-- Search Section Start -->
+        <div class="container-xxl py-3">
+            <div class="container">
+                <!-- نموذج البحث -->
+                <form id="searchForm" method="GET" action="{% url 'home' %}" class="d-flex justify-content-center">
+                    <input type="text" name="q" id="searchInput" class="form-control form-control-sm me-2 border border-primary" placeholder="Search for a course..." value="{{ request.GET.q }}" style="max-width: 300px;">
+                    <button type="submit" class="btn btn-primary btn-sm">Search</button>
+                </form>
+            </div>
+        </div>
+        <!-- Search Section End -->
+
         <!-- حاوية الدورات التي سيتم تحديثها بواسطة AJAX -->
         <div id="coursesContainer" class="row g-4 justify-content-center">
             {% include 'courses/course_list.html' %}
@@ -225,8 +224,8 @@
         </nav>
         <!-- Pagination Controls End -->
 
-    </div>
-</div>
+    </div> <!-- End of container -->
+</div> <!-- End of container-xxl -->
 <!-- Courses End -->
     
 <!-- Testimonial Start -->
